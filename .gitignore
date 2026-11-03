@@ -10,6 +10,11 @@ backup/
 # session screenshots and working notes (may show the Wi-Fi name or account avatar) stay local
 shots/
 work/
+# Private camera photos placed at the repository root during TV setup.
+/IMG_*.[Hh][Ee][Ii][Cc]
+/IMG_*.[Jj][Pp][Gg]
+/IMG_*.[Jj][Pp][Ee][Gg]
+/IMG_*.[Pp][Nn][Gg]
 # Perfetto traces from tools/trace.py: large, and they hold the TV's process list
 traces/
 # Results from tools/bench.py: result.json carries the address the run was given and the TV's fingerprint.
