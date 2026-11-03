@@ -237,6 +237,14 @@ default, press Follow theme, or push a theme again.
 
 **Your own walls with `weeb`.** Copy `themes/weeb` to a folder outside this checkout, so pictures you only have for your own use are never committed, put your pictures in its `wallpapers/` folder, then run `tools/theme.sh <that folder>`.
 
+**Private photo/video slideshows.** Keep the source media and output theme in ignored folders. The local-only helper below makes metadata-free 1920×1080 JPEGs, preserves portrait photos over a soft background, and takes three still moments from each short video. It does not upload anything or modify the originals:
+
+```bash
+tools/build-private-slideshow.sh <private-media-folder> <empty-private-theme>/wallpapers
+```
+
+Add a `config.json` beside `wallpapers/` with `wallpaper_rotation_minutes`, then push that private folder with `tools/theme.sh`. The launcher intentionally does not decode continuous background video; still frames avoid heat, stutter and audio surprises on TV hardware.
+
 ## Reduced motion
 
 `"reduced_motion": true` keeps the look but calms the movement and draws far fewer frames: the
