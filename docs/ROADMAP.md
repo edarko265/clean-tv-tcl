@@ -17,7 +17,7 @@ This roadmap records direction, not a promise of dates. Device safety, restore t
 - [x] Add upstream remote and document synchronization policy.
 - [x] Add project README, governance, security, support, contribution, ownership, and dependency-update standards.
 - [ ] Protect `main` in GitHub settings and make `dev` the default integration branch.
-- [ ] Run the complete test suite and launcher build on the imported baseline.
+- [x] Run the complete test suite and launcher build on the imported baseline.
 - [ ] Probe the TCL Android TV 11 model and firmware without changing it.
 - [ ] Create and verify a private local backup.
 - [ ] Produce a TCL-specific package classification and restore plan.
