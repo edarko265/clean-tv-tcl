@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#0b0812">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Clean TV Remote</title>
+  <style>
+    :root{color-scheme:dark;--ink:#f8f4ff;--muted:#aaa5b8;--panel:rgba(255,255,255,.075);--line:rgba(255,255,255,.13);--violet:#8f86e8;--plum:#5f4a8b;--ok:#63d7b0;--danger:#ff6b7c}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{margin:0;min-height:100svh;background:radial-gradient(circle at 80% -10%,#312552 0,transparent 42%),linear-gradient(165deg,#110d1d,#050408 70%);color:var(--ink);font:500 16px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overscroll-behavior:none}
+    main{width:min(100%,520px);margin:auto;padding:max(20px,env(safe-area-inset-top)) 18px max(30px,env(safe-area-inset-bottom))}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{font-size:22px;letter-spacing:.02em;margin:0} .brand{color:#b8b1ff;font-size:12px;letter-spacing:.18em;text-transform:uppercase;margin-top:4px}
+    #dot{width:11px;height:11px;border-radius:50%;background:#777;box-shadow:0 0 0 5px rgba(255,255,255,.06)} #dot.on{background:var(--ok);box-shadow:0 0 18px var(--ok)}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.28);backdrop-filter:blur(18px);margin-bottom:14px}
+    button{appearance:none;border:1px solid var(--line);background:linear-gradient(150deg,rgba(255,255,255,.13),rgba(255,255,255,.045));color:var(--ink);border-radius:20px;min-height:58px;font:600 15px inherit;box-shadow:inset 0 1px rgba(255,255,255,.08);touch-action:manipulation;user-select:none}
+    button:active,button.active{transform:scale(.95);background:linear-gradient(150deg,rgba(143,134,232,.5),rgba(95,74,139,.2));border-color:rgba(184,177,255,.7)}
+    button:focus-visible{outline:3px solid var(--violet);outline-offset:2px}
+    .top{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.top button{min-height:48px;border-radius:17px}.power{color:#ffb9c1}
+    .pad{width:270px;height:270px;position:relative;margin:12px auto}.pad button{position:absolute;width:82px;height:82px;border-radius:28px;font-size:26px}.up{left:94px;top:0}.down{left:94px;bottom:0}.left{left:0;top:94px}.right{right:0;top:94px}.ok{left:94px;top:94px;background:linear-gradient(145deg,#8278db,#4d3c76);font-size:18px}
+    .media{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.media button{font-size:20px;min-height:52px;border-radius:17px}
+    .volume{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:9px}.volume button{min-height:48px;border-radius:17px}
+    .apps{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.apps button{min-height:48px;border-radius:16px;font-size:13px}
+    h2{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin:2px 2px 12px}
+    form{display:flex;gap:9px}input[type=text]{min-width:0;flex:1;border:1px solid var(--line);border-radius:17px;background:rgba(0,0,0,.24);color:var(--ink);padding:0 15px;font:500 16px inherit}form button{min-height:50px;border-radius:17px;padding:0 18px}
+    #lighting[hidden]{display:none}.lightrow{display:grid;grid-template-columns:64px 1fr 90px;gap:12px;align-items:center}.lightrow input[type=color]{width:64px;height:52px;border:0;border-radius:14px;background:none;padding:0}.lightrow input[type=range]{width:100%;accent-color:var(--violet)}.lightrow button{min-height:48px;border-radius:16px}.toggle{display:flex;align-items:center;justify-content:space-between;margin-top:13px;color:var(--muted)}
+    input[type=checkbox]{appearance:none;width:50px;height:29px;border-radius:20px;background:#37323f;position:relative;transition:.2s}input[type=checkbox]:after{content:"";position:absolute;width:23px;height:23px;border-radius:50%;background:white;top:3px;left:3px;transition:.2s}input[type=checkbox]:checked{background:var(--plum)}input[type=checkbox]:checked:after{left:24px}
+    #status{font-size:12px;color:var(--muted);text-align:center;min-height:18px;margin-top:12px;overflow-wrap:anywhere}
+    @media(max-width:360px){main{padding-left:10px;padding-right:10px}.card{padding:12px}.pad{transform:scale(.92);margin-top:0;margin-bottom:0}}
+  </style>
+</head>
+<body>
+<main>
+  <header><div><h1>Clean TV Remote</h1><div class="brand">ARAXDA × TCL</div></div><span id="dot" aria-label="Connection status"></span></header>
+  <section class="card">
+    <div class="top">
+      <button data-key="BACK" aria-label="Back">Back</button><button data-key="HOME" aria-label="Home">Home</button><button data-key="VOLUME_MUTE" aria-label="Mute">Mute</button><button class="power" data-key="POWER" aria-label="Power">Power</button>
+    </div>
+    <div class="pad" aria-label="Directional pad">
+      <button class="up" data-key="DPAD_UP" aria-label="Up">▲</button><button class="left" data-key="DPAD_LEFT" aria-label="Left">◀</button><button class="ok" data-key="DPAD_CENTER" aria-label="OK">OK</button><button class="right" data-key="DPAD_RIGHT" aria-label="Right">▶</button><button class="down" data-key="DPAD_DOWN" aria-label="Down">▼</button>
+    </div>
+    <div class="media">
+      <button data-key="MEDIA_PREVIOUS" aria-label="Previous">❙◀</button><button data-key="MEDIA_REWIND" aria-label="Rewind">◀◀</button><button data-key="MEDIA_PLAY_PAUSE" aria-label="Play or pause">▶❙❙</button><button data-key="MEDIA_FAST_FORWARD" aria-label="Fast forward">▶▶</button><button data-key="MEDIA_NEXT" aria-label="Next">▶❙</button>
+    </div>
+    <div class="volume"><button data-key="VOLUME_DOWN">Volume −</button><button data-key="MUTE">Mute</button><button data-key="VOLUME_UP">Volume +</button></div>
+  </section>
+  <section class="card"><h2>Apps</h2><div class="apps"><button data-app="netflix">Netflix</button><button data-app="youtube">YouTube</button><button data-app="disney">Disney+</button><button data-app="max">Max</button><button data-app="prime">Prime Video</button><button data-app="spotify">Spotify</button></div></section>
+  <section class="card"><h2>Type on TV</h2><form id="textForm"><input id="text" type="text" maxlength="256" autocomplete="off" placeholder="Search or enter text" aria-label="Text to send"><button type="submit">Send</button></form></section>
+  <section class="card" id="lighting" hidden><h2>Backlight</h2><div class="lightrow"><input id="color" type="color" value="#6d67ae" aria-label="Light colour"><input id="brightness" type="range" min="1" max="255" value="128" aria-label="Brightness"><button id="applyLight">Apply</button></div><label class="toggle">Follow the active TV app<input id="lightSync" type="checkbox" checked></label><div class="volume"><button id="lightsOff">Lights off</button><button id="lightsOn">Lights on</button><button id="araxdaLight">Araxda</button></div></section>
+  <div id="status" role="status">Connecting…</div>
+</main>
+<script>
+  const base="__REMOTE_BASE__"; const statusEl=document.querySelector("#status"); const dot=document.querySelector("#dot");
+  async function post(route,data){try{const r=await fetch(base+route,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data),cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);navigator.vibrate?.(12)}catch(e){statusEl.textContent="Command failed — is the Mac bridge still running?"}}
+  document.querySelectorAll("[data-key]").forEach(b=>{let timer,repeat;b.addEventListener("pointerdown",e=>{e.preventDefault();b.classList.add("active");post("api/key",{key:b.dataset.key});timer=setTimeout(()=>repeat=setInterval(()=>post("api/key",{key:b.dataset.key}),150),420)});for(const name of ["pointerup","pointercancel","pointerleave"]){b.addEventListener(name,()=>{clearTimeout(timer);clearInterval(repeat);b.classList.remove("active")})}b.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&!e.repeat)post("api/key",{key:b.dataset.key})})});
+  document.querySelectorAll("[data-app]").forEach(b=>b.addEventListener("click",()=>post("api/app",{app:b.dataset.app})));
+  document.querySelector("#textForm").addEventListener("submit",e=>{e.preventDefault();const input=document.querySelector("#text");if(input.value){post("api/text",{text:input.value});input.value=""}});
+  const lighting=document.querySelector("#lighting"),sync=document.querySelector("#lightSync");
+  document.querySelector("#applyLight").addEventListener("click",()=>post("api/led",{action:"color",color:document.querySelector("#color").value,brightness:Number(document.querySelector("#brightness").value)}));
+  sync.addEventListener("change",()=>post("api/led",{action:"sync",enabled:sync.checked}));
+  document.querySelector("#lightsOff").addEventListener("click",()=>post("api/led",{action:"power",enabled:false})); document.querySelector("#lightsOn").addEventListener("click",()=>post("api/led",{action:"power",enabled:true})); document.querySelector("#araxdaLight").addEventListener("click",()=>{document.querySelector("#color").value="#6d67ae";post("api/led",{action:"color",color:"#6d67ae",brightness:128})});
+  async function refresh(){try{const r=await fetch(base+"api/status",{cache:"no-store"});const s=await r.json();dot.classList.toggle("on",s.available);lighting.hidden=!s.led_configured;sync.checked=s.led_sync;const app=(s.current_app||"").split(".").slice(-1)[0];statusEl.textContent=s.last_error||(s.available?((s.is_on?"TV on":"TV standby")+(app?" · "+app:"")):"TV unavailable")}catch(e){dot.classList.remove("on");statusEl.textContent="Mac bridge unavailable"}} refresh();setInterval(refresh,2000);
+</script>
+</body>
+</html>

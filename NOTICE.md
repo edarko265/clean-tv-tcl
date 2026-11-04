@@ -8,4 +8,7 @@ The Outfit font is licensed under the SIL Open Font License 1.1; see [`launcher/
 
 Theme and add-on assets may have separate licenses. Their local `CREDITS.md`, license, and source files control those assets.
 
+The optional phone-remote tool installs `androidtvremote2` under the Apache License 2.0 and its pinned
+dependencies into the ignored local `work/` directory; none of those packages is vendored in this repository.
+
 Android and Android TV are trademarks of Google LLC. TCL and other product, movie, game, sports, and service names are trademarks of their respective owners. Use of a name for compatibility or discussion does not imply affiliation or endorsement.

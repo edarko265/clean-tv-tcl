@@ -1,0 +1,7 @@
+# PyPI provenance links this release to tronikos/androidtvremote2's signed GitHub Actions workflow.
+androidtvremote2==0.3.2
+aiofiles==25.1.0
+cryptography==50.0.2
+protobuf==7.36.2
+cffi==2.1.1
+pycparser==3.12
