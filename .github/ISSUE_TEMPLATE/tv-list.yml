@@ -1,0 +1,55 @@
+name: My TV
+description: A TV that is not in examples/ yet, or a list that needs a change
+title: "[TV] Brand Model (Android version)"
+labels: [tv-list]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Lists people have tested live in [`examples/`](../tree/dev/examples). If you already have a working list, open a pull request to `dev`: see [CONTRIBUTING.md](../blob/dev/CONTRIBUTING.md).
+  - type: input
+    id: model
+    attributes:
+      label: TV model
+      description: "`tools/tv.py --probe` prints the model, device codename, Android version and build."
+      placeholder: Sony BRAVIA KD-55X8509C (SVP-DTV15)
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: Android version and firmware build
+      placeholder: Android TV 11, build RTT1.230922.001
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: How far did you get?
+      options:
+        - Could not connect over ADB
+        - Debloat worked, launcher did not
+        - Both worked, here is my list
+        - Something broke after the debloat
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What happened
+      description: What you ran, what the TV did, what you expected. Paste the packages you disabled if you have them.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: "Optional. Remove Wi-Fi names, account details, device names, and other private information before uploading."
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed IP addresses, Wi-Fi names, serial numbers, Android IDs, MAC addresses, account details, and ADB keys.
+          required: true

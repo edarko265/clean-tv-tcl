@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Setup question or idea
+    url: https://github.com/edarko265/clean-tv-tcl/discussions
+    about: Use Discussions for support and early feature ideas when it is enabled.
+  - name: Security vulnerability
+    url: https://github.com/edarko265/clean-tv-tcl/security/advisories/new
+    about: Report vulnerabilities privately. Never publish device identifiers or exploits in an issue.
+  - name: Upstream CleanYourTV
+    url: https://github.com/Gathin23/cleanyourtv
+    about: Check whether a general, non-TCL issue belongs in the upstream project.
