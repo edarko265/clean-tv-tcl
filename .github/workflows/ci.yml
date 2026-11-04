@@ -20,7 +20,7 @@ jobs:
       - name: Tools virtualenv
         run: |
           python3 -m venv tools/venv
-          tools/venv/bin/pip install -q -r tools/requirements.txt
+          tools/venv/bin/pip install -q -r tools/requirements.txt -r tools/requirements-phone-remote.txt
       - name: Example lists, README tables, shell helpers
         env:
           CLEANYOURTV_STRICT: ${{ github.event_name == 'push' && '1' || '' }}

@@ -20,6 +20,20 @@ the Pi stores only controller profiles, playlists and games you own or that are 
 configuration has been backed up. Device-specific remaps belong in `controller-profiles/`; do not guess mappings
 without the real controller connected.
 
+## Verified TCL setup
+
+The Android TV 11 target was physically verified with Libretro's stable 32-bit `RetroArch_ra32.apk` version
+1.22.2. The downloaded APK had SHA-256
+`9e964f53089a302401a6d5b1451d7ce5539f39b85eb0a305d8d77e6edcbf803f`; Android's APK verifier reported the
+Libretro release certificate SHA-256
+`d7a5eab30902c9b2775af6fb4eac2d294a64634fb47dd1382bc3ac5bf669982e`. Check both values again whenever the
+version changes rather than assuming a future file is identical.
+
+The official updater installed and launched the public-domain 2048 contentless core successfully. ADB-injected
+and network-remote D-pad events did not behave as a RetroArch game controller on this TV. Use a physical Bluetooth
+controller paired directly to the TV; the phone remote's **Game Hub** shortcut launches RetroArch but is not a
+replacement gamepad.
+
 ## Storage layout
 
 ```text
