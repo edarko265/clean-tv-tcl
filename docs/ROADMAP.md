@@ -96,8 +96,8 @@ Candidates will be evaluated after the launcher and restore workflow are stable:
 Every candidate must pass controller mapping, Bluetooth stability, thermal/memory, network latency, privacy, licensing, and easy-removal checks on the actual TCL hardware.
 
 Completed on the Pi and TV: an owner-only legal-content tree, conservative RetroArch guidance, the verified stable
-32-bit Android build, a phone-remote launch shortcut, and a successful public-domain 2048 launch. Real controller
-mapping and gameplay remain gated only on pairing and physically testing a Bluetooth gamepad with the TV.
+32-bit Android build, a phone-remote launch shortcut, and public-domain 2048 gameplay with all four directions
+verified on the physical TCL remote. Bluetooth-controller mapping remains for games that need more buttons.
 
 ## Release gate
 

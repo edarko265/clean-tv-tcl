@@ -29,10 +29,10 @@ Libretro release certificate SHA-256
 `d7a5eab30902c9b2775af6fb4eac2d294a64634fb47dd1382bc3ac5bf669982e`. Check both values again whenever the
 version changes rather than assuming a future file is identical.
 
-The official updater installed and launched the public-domain 2048 contentless core successfully. ADB-injected
-and network-remote D-pad events did not behave as a RetroArch game controller on this TV. Use a physical Bluetooth
-controller paired directly to the TV; the phone remote's **Game Hub** shortcut launches RetroArch but is not a
-replacement gamepad.
+The official updater installed and launched the public-domain 2048 contentless core successfully. The TCL remote's
+physical D-pad was verified in all four directions during gameplay. ADB-injected and network-remote D-pad events did
+not behave as a RetroArch game controller on this TV, so the phone remote's **Game Hub** shortcut launches RetroArch
+but is not a replacement gamepad. Pair a Bluetooth controller directly to the TV for games that need more buttons.
 
 ## Storage layout
 
