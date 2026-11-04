@@ -51,6 +51,18 @@ final class ThemeLibrary {
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(CURRENT, PERSONAL);
     }
 
+    /** One-based catalogue position for ThemeMotionView; Personal and a missing pack stay still. */
+    static int currentMotion(Context context) {
+        String current = currentId(context);
+        int position = 0;
+        for (Theme theme : themes(context)) {
+            if (PERSONAL.equals(theme.id)) continue;
+            position++;
+            if (current.equals(theme.id)) return position;
+        }
+        return 0;
+    }
+
     static List<Theme> themes(Context context) {
         List<Theme> out = new ArrayList<>();
         File personal = Config.externalDir(context);

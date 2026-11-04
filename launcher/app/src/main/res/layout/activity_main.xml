@@ -30,6 +30,13 @@
         android:layout_height="match_parent"
         android:alpha="0" />
 
+    <!-- Subtle procedural movement for bundled themes; stopped off-screen and disabled with Reduced motion. -->
+    <com.gathin.tvhome.ThemeMotionView
+        android:id="@+id/themeMotion"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no" />
+
     <!-- Race-weekend panel (a theme's race_calendar, see RaceWeekend): in the free space under the clock,
          shown only from shortly before a weekend's first session until the race is over. Updated once a
          minute with the clock, never animated. -->

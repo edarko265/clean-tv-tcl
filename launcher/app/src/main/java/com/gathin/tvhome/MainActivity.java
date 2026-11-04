@@ -144,6 +144,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private RecyclerView grid;
     private FrameLayout root;
     private WallpaperPlayer wallpaperPlayer;
+    /** Theme-specific procedural movement, active only while Home is in front. */
+    private ThemeMotionView themeMotion;
     private GlassView glass;
     private View ambient;
     private TextView heroName;
@@ -506,6 +508,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // the theme's background, so launch looks the same.
         getWindow().setBackgroundDrawable(null);
         wallpaperPlayer = new WallpaperPlayer(this, root, cfg);
+        themeMotion = findViewById(R.id.themeMotion);
+        themeMotion.configure(ThemeLibrary.currentMotion(this), animations, reducedMotion);
         sky = findViewById(R.id.sky);
         sky.setIntensity(cfg.skyIntensity);
         glass = findViewById(R.id.glass);

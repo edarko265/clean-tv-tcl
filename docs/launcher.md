@@ -58,6 +58,8 @@ The launcher's own page has these rows, top to bottom:
   clocks (Home and the clock screensaver) to that, whatever the TV uses (`clock_format` in a theme).
 - **Theme gallery**: chooses an installed offline theme pack with the remote. The computer-pushed theme
   stays untouched as a private Personal entry, so a photo theme can be restored without retransferring it.
+  Each bundled pack has a small procedural motion layer matched to its setting; it stops outside Home and
+  follows the Animations and Reduced motion choices.
 - **Wallpaper**: one picture from the theme's collection (or its `wallpaper.jpg`), **None**, or **Theme
   default**. A pick holds that picture and stops the rotation until you choose Theme default, press
   Follow theme, or push the theme again.

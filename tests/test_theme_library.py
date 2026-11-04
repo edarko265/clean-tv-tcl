@@ -52,6 +52,13 @@ class ThemeLibraryTest(unittest.TestCase):
         self.assertIn("ThemeLibrary.apply(this, selected.id)", activity)
         self.assertIn("ThemeFiles.libraryPath", provider)
 
+    def test_every_gallery_theme_has_lightweight_motion(self):
+        library = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/ThemeLibrary.java").read_text()
+        activity = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text()
+        self.assertIn("currentMotion", library)
+        self.assertIn("ThemeLibrary.currentMotion(this)", activity)
+        self.assertIn("themeMotion.configure", activity)
+
     def test_docs_and_credits_name_the_offline_gallery(self):
         self.assertTrue((LIBRARY / "CREDITS.md").is_file())
         self.assertIn("Theme gallery", (ROOT / "docs/launcher.md").read_text(encoding="utf-8"))

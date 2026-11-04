@@ -15,7 +15,9 @@ powershell -ExecutionPolicy Bypass -File tools\theme.ps1 -TvHost 192.168.1.50 th
 This fork also has an offline on-TV gallery with 18 public packs, plus the private Personal entry.
 Install its packs once with
 `TV_HOST=<tv-ip> tools/theme-library.sh`; afterward use **Launcher settings → Theme gallery** with the
-remote. The current computer-pushed theme stays untouched as the private Personal entry.
+remote. The current computer-pushed theme stays untouched as the private Personal entry. Each gallery pack has
+its own lightweight movement (for example circuit pulses, water shimmer, aurora or drifting ash), disabled with
+the launcher's Animations switch or Reduced motion.
 
 `tools/venv/bin/python -I tools/manage.py list themes` and `list switches` list them from this file, `show <name>` gives one with its
 screenshot, and `manage.py set <switch> <value> --theme <your folder>` writes a key into a theme folder of your own
