@@ -52,3 +52,14 @@ tailnet HTTPS; disable anonymous analytics and do not configure illegal indexers
 The [`game-hub/`](game-hub/) folder contains legal RetroArch/controller defaults. The public and ignored private
 theme libraries can be synchronized with `tools/sync-pi-library.sh`; include `/mnt/storage/clean-tv` in encrypted
 backups. Keep personal media, API keys, pairing certificates, controller identifiers and bearer QR codes outside Git.
+
+## Jellyfin TV onboarding
+
+Keep accounts on the Pi server; do not create an unrelated account inside the TV client. After adding the Pi's
+Jellyfin server address, **No account** means only that this TV has not saved a login yet. Choose **Manual login →
+Quick Connect** on the TV. In an already authenticated Jellyfin phone or web client, open **Settings → Quick
+Connect**, enter the TV's six-character code and approve it. The TV client can request Quick Connect but cannot
+authorize another device.
+
+Prefer Quick Connect or the existing password-protected user over a passwordless living-room account. Media remains
+on the Pi under the server's configured read-only movie and show mounts; the TV is only a playback client.
