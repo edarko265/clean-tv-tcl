@@ -154,6 +154,11 @@ class PhoneRemoteTest(unittest.TestCase):
             links = PHONE_REMOTE.load_service_links(path)
             self.assertEqual("Jellyfin", links["jellyfin"].label)
             self.assertEqual("https://tv.example.test", links["jellyfin"].url)
+            path.write_text(
+                json.dumps([{"id": "jellyfin", "label": "Jellyfin", "url": "org.jellyfin.androidtv"}]),
+                encoding="utf-8",
+            )
+            self.assertEqual("org.jellyfin.androidtv", PHONE_REMOTE.load_service_links(path)["jellyfin"].url)
 
     def test_voice_wav_validation_rejects_stereo(self):
         audio = BytesIO()

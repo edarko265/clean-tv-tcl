@@ -28,7 +28,7 @@ an internet-exposed reverse proxy. The optional Wyoming endpoint enables explici
 
 ```json
 [
-  {"id":"jellyfin","label":"Jellyfin","url":"https://tv.example.com"},
+  {"id":"jellyfin","label":"Jellyfin","url":"org.jellyfin.androidtv"},
   {"id":"jellyfin-install","label":"Install Jellyfin","url":"market://details?id=org.jellyfin.androidtv"}
 ]
 ```

@@ -14,6 +14,7 @@ import io
 import ipaddress
 import json
 import os
+import re
 import secrets
 import socket
 import stat
@@ -117,8 +118,13 @@ def load_service_links(path: Path | None) -> dict[str, ServiceLink]:
             raise ValueError("service link ids must be short letters, numbers or hyphens")
         if not isinstance(label, str) or not 1 <= len(label) <= 32:
             raise ValueError("service link labels must be 1-32 characters")
-        if not isinstance(url, str) or not url.startswith(("http://", "https://", "market://")) or len(url) > 500:
-            raise ValueError("service link URLs must be http(s) or Play Store URLs")
+        package_name = isinstance(url, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+", url)
+        if (
+            not isinstance(url, str)
+            or (not url.startswith(("http://", "https://", "market://")) and package_name is None)
+            or len(url) > 500
+        ):
+            raise ValueError("service targets must be http(s), Play Store URLs or Android package names")
         if link_id in result:
             raise ValueError(f"duplicate service link id: {link_id}")
         result[link_id] = ServiceLink(link_id, label, url)
