@@ -3,66 +3,117 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-  <meta name="theme-color" content="#0b0812">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#100d1c">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <title>Clean TV Remote</title>
   <style>
-    :root{color-scheme:dark;--ink:#f8f4ff;--muted:#aaa5b8;--panel:rgba(255,255,255,.075);--line:rgba(255,255,255,.13);--violet:#8f86e8;--plum:#5f4a8b;--ok:#63d7b0;--danger:#ff6b7c}
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    body{margin:0;min-height:100svh;background:radial-gradient(circle at 80% -10%,#312552 0,transparent 42%),linear-gradient(165deg,#110d1d,#050408 70%);color:var(--ink);font:500 16px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overscroll-behavior:none}
-    main{width:min(100%,520px);margin:auto;padding:max(20px,env(safe-area-inset-top)) 18px max(30px,env(safe-area-inset-bottom))}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    h1{font-size:22px;letter-spacing:.02em;margin:0} .brand{color:#b8b1ff;font-size:12px;letter-spacing:.18em;text-transform:uppercase;margin-top:4px}
-    #dot{width:11px;height:11px;border-radius:50%;background:#777;box-shadow:0 0 0 5px rgba(255,255,255,.06)} #dot.on{background:var(--ok);box-shadow:0 0 18px var(--ok)}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.28);backdrop-filter:blur(18px);margin-bottom:14px}
-    button{appearance:none;border:1px solid var(--line);background:linear-gradient(150deg,rgba(255,255,255,.13),rgba(255,255,255,.045));color:var(--ink);border-radius:20px;min-height:58px;font:600 15px inherit;box-shadow:inset 0 1px rgba(255,255,255,.08);touch-action:manipulation;user-select:none}
-    button:active,button.active{transform:scale(.95);background:linear-gradient(150deg,rgba(143,134,232,.5),rgba(95,74,139,.2));border-color:rgba(184,177,255,.7)}
-    button:focus-visible{outline:3px solid var(--violet);outline-offset:2px}
-    .top{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.top button{min-height:48px;border-radius:17px}.power{color:#ffb9c1}
-    .pad{width:270px;height:270px;position:relative;margin:12px auto}.pad button{position:absolute;width:82px;height:82px;border-radius:28px;font-size:26px}.up{left:94px;top:0}.down{left:94px;bottom:0}.left{left:0;top:94px}.right{right:0;top:94px}.ok{left:94px;top:94px;background:linear-gradient(145deg,#8278db,#4d3c76);font-size:18px}
-    .media{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.media button{font-size:20px;min-height:52px;border-radius:17px}
-    .volume{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:9px}.volume button{min-height:48px;border-radius:17px}
-    .apps{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.apps button{min-height:48px;border-radius:16px;font-size:13px}
-    h2{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin:2px 2px 12px}
-    form{display:flex;gap:9px}input[type=text]{min-width:0;flex:1;border:1px solid var(--line);border-radius:17px;background:rgba(0,0,0,.24);color:var(--ink);padding:0 15px;font:500 16px inherit}form button{min-height:50px;border-radius:17px;padding:0 18px}
-    #lighting[hidden]{display:none}.lightrow{display:grid;grid-template-columns:64px 1fr 90px;gap:12px;align-items:center}.lightrow input[type=color]{width:64px;height:52px;border:0;border-radius:14px;background:none;padding:0}.lightrow input[type=range]{width:100%;accent-color:var(--violet)}.lightrow button{min-height:48px;border-radius:16px}.toggle{display:flex;align-items:center;justify-content:space-between;margin-top:13px;color:var(--muted)}
-    input[type=checkbox]{appearance:none;width:50px;height:29px;border-radius:20px;background:#37323f;position:relative;transition:.2s}input[type=checkbox]:after{content:"";position:absolute;width:23px;height:23px;border-radius:50%;background:white;top:3px;left:3px;transition:.2s}input[type=checkbox]:checked{background:var(--plum)}input[type=checkbox]:checked:after{left:24px}
-    #status{font-size:12px;color:var(--muted);text-align:center;min-height:18px;margin-top:12px;overflow-wrap:anywhere}
-    @media(max-width:360px){main{padding-left:10px;padding-right:10px}.card{padding:12px}.pad{transform:scale(.92);margin-top:0;margin-bottom:0}}
+    :root{color-scheme:dark;--bg:#0b0912;--card:#171324;--raised:#252038;--line:#363047;--ink:#f7f4ff;--muted:#aca5bd;--violet:#8c7cff;--violet2:#654edb;--ok:#54d68b;--danger:#ff6b78;font-family:Inter,ui-rounded,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--bg)}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -10%,#2b2050 0,transparent 38%),var(--bg);background-size:140% 140%;color:var(--ink);overscroll-behavior:none;animation:ambientShift 12s ease-in-out infinite alternate}
+    main{width:min(100%,560px);margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(30px + env(safe-area-inset-bottom))}
+    header{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 16px}.brand{display:flex;align-items:center;gap:9px}.remoteicon{width:34px;height:34px;border-radius:10px;box-shadow:0 0 18px #806cff66}h1{font-size:1.12rem;margin:0;letter-spacing:.02em}.connection{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.78rem;max-width:60%;text-align:right}.dot{width:9px;height:9px;border-radius:50%;background:var(--danger);box-shadow:0 0 10px currentColor;flex:0 0 auto}.dot.on{background:var(--ok);animation:connectedPulse 2.2s ease-in-out infinite}
+    .card{background:linear-gradient(145deg,rgba(34,29,51,.96),rgba(20,17,31,.96));border:1px solid var(--line);border-radius:25px;padding:14px;margin-bottom:12px;box-shadow:0 16px 36px #0005;animation:cardIn .42s both}.card:nth-of-type(2){animation-delay:.04s}.card:nth-of-type(3){animation-delay:.08s}.card:nth-of-type(4){animation-delay:.12s}.card:nth-of-type(5){animation-delay:.16s}.card:nth-of-type(6){animation-delay:.2s}h2{font-size:.72rem;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);margin:2px 3px 12px}
+    button{appearance:none;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-weight:680;min-height:53px;border-radius:17px;touch-action:manipulation;user-select:none;cursor:pointer;transition:transform .08s,background .08s,border-color .08s}button:active,button.active{transform:scale(.95);background:var(--violet2);border-color:var(--violet)}button:focus-visible,textarea:focus-visible{outline:3px solid #9f91ff;outline-offset:2px}.primary{background:linear-gradient(135deg,var(--violet),var(--violet2));border-color:#a99dff}.danger{color:#ff9ca5}.icon{font-size:1.28rem;line-height:1}.label{display:block;font-size:.65rem;color:var(--muted);font-weight:600;margin-top:3px}
+    .top,.utility,.media,.apps,.edit,.sendrow{display:grid;gap:8px}.top{grid-template-columns:repeat(4,1fr)}.utility{grid-template-columns:repeat(4,1fr)}.top button,.utility button,.media button{min-height:58px}.media{grid-template-columns:repeat(5,1fr)}
+    .navarea{display:grid;grid-template-columns:minmax(190px,1fr) minmax(125px,.65fr);gap:12px}.dpad{display:grid;grid-template-columns:repeat(3,66px);grid-template-rows:repeat(3,62px);justify-content:center;gap:6px}.dpad button{border-radius:23px;font-size:1.45rem}.dpad .up{grid-column:2}.dpad .left{grid-row:2;grid-column:1}.dpad .ok{grid-row:2;grid-column:2;background:linear-gradient(135deg,var(--violet),var(--violet2));font-size:.9rem}.dpad .right{grid-row:2;grid-column:3}.dpad .down{grid-row:3;grid-column:2}
+    #touchpad{position:relative;overflow:hidden;min-height:198px;border:1px solid #4a4263;border-radius:22px;background:radial-gradient(circle at 45% 35%,#332b4b,#161220 72%);display:grid;place-items:center;text-align:center;color:var(--muted);touch-action:none;user-select:none;padding:16px;box-shadow:inset 0 0 30px #0005}#touchpad:before{content:"";position:absolute;width:70%;height:180%;background:linear-gradient(90deg,transparent,#9a8aff12,transparent);transform:rotate(20deg);animation:padScan 5s linear infinite}#touchpad>div{position:relative}#touchpad.active{border-color:var(--violet);color:var(--ink)}#touchpad strong{display:block;color:var(--ink);font-size:.88rem;margin-bottom:6px}
+    textarea{width:100%;min-height:96px;resize:vertical;border-radius:17px;border:1px solid var(--line);background:#0e0b16;color:var(--ink);font:inherit;font-size:16px;padding:13px;caret-color:var(--violet)}.hint{color:var(--muted);font-size:.72rem;line-height:1.45;margin:9px 2px}.sendrow{grid-template-columns:1fr 1.25fr;margin-top:8px}.edit{grid-template-columns:repeat(4,1fr);margin-top:8px}.edit button{min-height:45px;font-size:.72rem}
+    details{margin-top:10px}summary{list-style:none;cursor:pointer;color:var(--muted);font-size:.8rem;padding:10px 3px}summary::-webkit-details-marker{display:none}.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.numpad button{font-size:1.1rem}.numpad .zero{grid-column:2}.apps{grid-template-columns:repeat(3,1fr)}.apps button{min-height:49px;font-size:.78rem}.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,18px);background:#f3efff;color:#171124;padding:10px 15px;border-radius:999px;font-size:.78rem;font-weight:700;opacity:0;pointer-events:none;transition:.2s;z-index:10;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}.toast.show{opacity:1;transform:translate(-50%,0)}
+    @keyframes ambientShift{to{background-position:35% 10%}}@keyframes connectedPulse{50%{opacity:.55;box-shadow:0 0 18px currentColor}}@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}@keyframes padScan{from{left:-100%}to{left:145%}}
+    @media(prefers-reduced-motion:reduce){*,*:before{animation:none!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+    @media(max-width:390px){main{padding-left:9px;padding-right:9px}.card{padding:11px;border-radius:21px}.navarea{grid-template-columns:1fr}.dpad{grid-template-columns:repeat(3,70px)}#touchpad{min-height:135px}.utility{grid-template-columns:repeat(3,1fr)}.media{grid-template-columns:repeat(5,1fr);gap:5px}.media button{padding:0}.top{gap:5px}.top button{padding:0}.remoteicon{width:30px;height:30px}h1{font-size:1rem}}
   </style>
 </head>
 <body>
 <main>
-  <header><div><h1>Clean TV Remote</h1><div class="brand">ARAXDA × TCL</div></div><span id="dot" aria-label="Connection status"></span></header>
+  <header><div class="brand"><img class="remoteicon" src="icon-192.png" alt=""><h1>Clean TV Remote</h1></div><div class="connection"><span id="dot" class="dot"></span><span id="status">Connecting…</span></div></header>
+  <section class="card"><div class="top">
+    <button class="danger" data-key="POWER" aria-label="Power"><span class="icon">⏻</span><span class="label">Power</span></button>
+    <button data-key="BACK"><span class="icon">↩</span><span class="label">Back</span></button>
+    <button class="primary" data-key="HOME"><span class="icon">⌂</span><span class="label">Home</span></button>
+    <button data-key="APP_SWITCH"><span class="icon">▣</span><span class="label">Recents</span></button>
+  </div></section>
   <section class="card">
-    <div class="top">
-      <button data-key="BACK" aria-label="Back">Back</button><button data-key="HOME" aria-label="Home">Home</button><button data-key="VOLUME_MUTE" aria-label="Mute">Mute</button><button class="power" data-key="POWER" aria-label="Power">Power</button>
+    <h2>Navigate</h2>
+    <div class="navarea">
+      <div class="dpad" aria-label="Directional controls">
+        <button class="up" data-key="DPAD_UP" data-repeat aria-label="Up">▲</button>
+        <button class="left" data-key="DPAD_LEFT" data-repeat aria-label="Left">◀</button>
+        <button class="ok" data-key="DPAD_CENTER">OK</button>
+        <button class="right" data-key="DPAD_RIGHT" data-repeat aria-label="Right">▶</button>
+        <button class="down" data-key="DPAD_DOWN" data-repeat aria-label="Down">▼</button>
+      </div>
+      <div id="touchpad" role="button" tabindex="0" aria-label="Touchpad: swipe to navigate, tap to select"><div><strong>Touchpad</strong>Swipe to move<br>Tap for OK</div></div>
     </div>
-    <div class="pad" aria-label="Directional pad">
-      <button class="up" data-key="DPAD_UP" aria-label="Up">▲</button><button class="left" data-key="DPAD_LEFT" aria-label="Left">◀</button><button class="ok" data-key="DPAD_CENTER" aria-label="OK">OK</button><button class="right" data-key="DPAD_RIGHT" aria-label="Right">▶</button><button class="down" data-key="DPAD_DOWN" aria-label="Down">▼</button>
-    </div>
+  </section>
+  <section class="card">
+    <h2>Type or paste on TV</h2>
+    <form id="textForm">
+      <textarea id="text" maxlength="1000" enterkeyhint="send" autocapitalize="sentences" placeholder="Focus a search or login field on the TV, then type or paste here"></textarea>
+      <p class="hint">Works when an editable field is focused on the TV. Protected password fields and some streaming apps may block remote input.</p>
+      <div class="sendrow"><button type="submit" class="primary">Send text</button><button type="button" id="sendEnter">Send + Enter</button></div>
+      <div class="edit"><button type="button" id="paste">Paste</button><button type="button" data-key="SPACE">Space</button><button type="button" data-key="DEL" data-repeat>⌫ Delete</button><button type="button" data-key="ENTER">Enter</button></div>
+    </form>
+  </section>
+  <section class="card">
+    <h2>Sound & playback</h2>
     <div class="media">
-      <button data-key="MEDIA_PREVIOUS" aria-label="Previous">❙◀</button><button data-key="MEDIA_REWIND" aria-label="Rewind">◀◀</button><button data-key="MEDIA_PLAY_PAUSE" aria-label="Play or pause">▶❙❙</button><button data-key="MEDIA_FAST_FORWARD" aria-label="Fast forward">▶▶</button><button data-key="MEDIA_NEXT" aria-label="Next">▶❙</button>
+      <button data-key="VOLUME_DOWN" data-repeat><span class="icon">−</span><span class="label">Volume</span></button>
+      <button data-key="VOLUME_MUTE"><span class="icon">⌁</span><span class="label">Mute</span></button>
+      <button data-key="MEDIA_REWIND"><span class="icon">⏪</span><span class="label">Rewind</span></button>
+      <button class="primary" data-key="MEDIA_PLAY_PAUSE"><span class="icon">▶︎</span><span class="label">Play/Pause</span></button>
+      <button data-key="MEDIA_FAST_FORWARD"><span class="icon">⏩</span><span class="label">Forward</span></button>
+      <button data-key="VOLUME_UP" data-repeat><span class="icon">＋</span><span class="label">Volume</span></button>
+      <button data-key="CHANNEL_DOWN" data-repeat><span class="icon">−</span><span class="label">Channel</span></button>
+      <button data-key="MEDIA_PREVIOUS"><span class="icon">⏮</span><span class="label">Previous</span></button>
+      <button data-key="MEDIA_STOP"><span class="icon">■</span><span class="label">Stop</span></button>
+      <button data-key="CHANNEL_UP" data-repeat><span class="icon">＋</span><span class="label">Channel</span></button>
     </div>
-    <div class="volume"><button data-key="VOLUME_DOWN">Volume −</button><button data-key="MUTE">Mute</button><button data-key="VOLUME_UP">Volume +</button></div>
+  </section>
+  <section class="card">
+    <h2>TV controls</h2>
+    <div class="utility">
+      <button data-key="SETTINGS">⚙<span class="label">Settings</span></button><button data-key="TV_INPUT">▰<span class="label">Inputs</span></button>
+      <button data-key="MENU">☰<span class="label">Menu</span></button><button data-key="INFO">ⓘ<span class="label">Info</span></button>
+      <button data-key="GUIDE">▤<span class="label">Guide</span></button><button data-key="CAPTIONS">CC<span class="label">Captions</span></button>
+      <button data-key="SEARCH">⌕<span class="label">Search</span></button><button data-key="CLEAR">×<span class="label">Clear field</span></button>
+    </div>
+    <details><summary>Show number pad</summary><div class="numpad"><button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button><button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button><button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button><button class="zero" data-key="0">0</button></div></details>
   </section>
   <section class="card"><h2>Apps</h2><div class="apps"><button data-app="netflix">Netflix</button><button data-app="youtube">YouTube</button><button data-app="disney">Disney+</button><button data-app="max">Max</button><button data-app="prime">Prime Video</button><button data-app="spotify">Spotify</button></div></section>
-  <section class="card"><h2>Type on TV</h2><form id="textForm"><input id="text" type="text" maxlength="256" autocomplete="off" placeholder="Search or enter text" aria-label="Text to send"><button type="submit">Send</button></form></section>
-  <section class="card" id="lighting" hidden><h2>Backlight</h2><div class="lightrow"><input id="color" type="color" value="#6d67ae" aria-label="Light colour"><input id="brightness" type="range" min="1" max="255" value="128" aria-label="Brightness"><button id="applyLight">Apply</button></div><label class="toggle">Follow the active TV app<input id="lightSync" type="checkbox" checked></label><div class="volume"><button id="lightsOff">Lights off</button><button id="lightsOn">Lights on</button><button id="araxdaLight">Araxda</button></div></section>
-  <div id="status" role="status">Connecting…</div>
 </main>
+<div id="toast" class="toast" role="status"></div>
 <script>
-  const base="__REMOTE_BASE__"; const statusEl=document.querySelector("#status"); const dot=document.querySelector("#dot");
-  async function post(route,data){try{const r=await fetch(base+route,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data),cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);navigator.vibrate?.(12)}catch(e){statusEl.textContent="Command failed — is the Mac bridge still running?"}}
-  document.querySelectorAll("[data-key]").forEach(b=>{let timer,repeat;b.addEventListener("pointerdown",e=>{e.preventDefault();b.classList.add("active");post("api/key",{key:b.dataset.key});timer=setTimeout(()=>repeat=setInterval(()=>post("api/key",{key:b.dataset.key}),150),420)});for(const name of ["pointerup","pointercancel","pointerleave"]){b.addEventListener(name,()=>{clearTimeout(timer);clearInterval(repeat);b.classList.remove("active")})}b.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&!e.repeat)post("api/key",{key:b.dataset.key})})});
-  document.querySelectorAll("[data-app]").forEach(b=>b.addEventListener("click",()=>post("api/app",{app:b.dataset.app})));
-  document.querySelector("#textForm").addEventListener("submit",e=>{e.preventDefault();const input=document.querySelector("#text");if(input.value){post("api/text",{text:input.value});input.value=""}});
-  const lighting=document.querySelector("#lighting"),sync=document.querySelector("#lightSync");
-  document.querySelector("#applyLight").addEventListener("click",()=>post("api/led",{action:"color",color:document.querySelector("#color").value,brightness:Number(document.querySelector("#brightness").value)}));
-  sync.addEventListener("change",()=>post("api/led",{action:"sync",enabled:sync.checked}));
-  document.querySelector("#lightsOff").addEventListener("click",()=>post("api/led",{action:"power",enabled:false})); document.querySelector("#lightsOn").addEventListener("click",()=>post("api/led",{action:"power",enabled:true})); document.querySelector("#araxdaLight").addEventListener("click",()=>{document.querySelector("#color").value="#6d67ae";post("api/led",{action:"color",color:"#6d67ae",brightness:128})});
-  async function refresh(){try{const r=await fetch(base+"api/status",{cache:"no-store"});const s=await r.json();dot.classList.toggle("on",s.available);lighting.hidden=!s.led_configured;sync.checked=s.led_sync;const app=(s.current_app||"").split(".").slice(-1)[0];statusEl.textContent=s.last_error||(s.available?((s.is_on?"TV on":"TV standby")+(app?" · "+app:"")):"TV unavailable")}catch(e){dot.classList.remove("on");statusEl.textContent="Mac bridge unavailable"}} refresh();setInterval(refresh,2000);
+(()=>{
+  "use strict";
+  const base="__REMOTE_BASE__",dot=document.querySelector("#dot"),statusEl=document.querySelector("#status"),toastEl=document.querySelector("#toast"),textEl=document.querySelector("#text");
+  let toastTimer;
+  function toast(message){toastEl.textContent=message;toastEl.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastEl.classList.remove("show"),1700)}
+  async function post(route,data){try{const response=await fetch(base+route,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});if(!response.ok)throw new Error(String(response.status));if(navigator.vibrate)navigator.vibrate(8);return true}catch(error){toast("Command could not be sent");return false}}
+  function key(name,count=1){return post("api/key",{key:name,count})}
+  document.querySelectorAll("[data-key]").forEach(button=>{
+    let delay,repeat;
+    button.addEventListener("pointerdown",event=>{if(event.button!==0)return;event.preventDefault();button.setPointerCapture?.(event.pointerId);button.classList.add("active");key(button.dataset.key);if(button.hasAttribute("data-repeat")){delay=setTimeout(()=>repeat=setInterval(()=>key(button.dataset.key),130),430)}});
+    function stop(){clearTimeout(delay);clearInterval(repeat);button.classList.remove("active")}
+    button.addEventListener("pointerup",stop);button.addEventListener("pointercancel",stop);button.addEventListener("lostpointercapture",stop);
+    button.addEventListener("keydown",event=>{if((event.key==="Enter"||event.key===" ")&&!event.repeat){event.preventDefault();key(button.dataset.key)}});
+  });
+  document.querySelectorAll("[data-app]").forEach(button=>button.addEventListener("click",()=>post("api/app",{app:button.dataset.app})));
+  async function sendText(submit){const text=textEl.value;if(!text){toast("Type or paste something first");textEl.focus();return}if(await post("api/text",{text,submit})){toast(submit?"Text sent, then Enter":"Text sent");textEl.value=""}}
+  document.querySelector("#textForm").addEventListener("submit",event=>{event.preventDefault();sendText(false)});
+  document.querySelector("#sendEnter").addEventListener("click",()=>sendText(true));
+  document.querySelector("#paste").addEventListener("click",async()=>{try{if(!navigator.clipboard?.readText)throw new Error("clipboard unavailable");const pasted=await navigator.clipboard.readText();if(!pasted)throw new Error("clipboard empty");textEl.value=(textEl.value+pasted).slice(0,1000);textEl.focus();toast("Pasted — tap Send when ready")}catch(error){textEl.focus();toast("Long-press the box and choose Paste")}});
+  const pad=document.querySelector("#touchpad");let start=null;
+  pad.addEventListener("pointerdown",event=>{event.preventDefault();pad.setPointerCapture(event.pointerId);start={x:event.clientX,y:event.clientY};pad.classList.add("active")});
+  pad.addEventListener("pointerup",event=>{if(!start)return;const dx=event.clientX-start.x,dy=event.clientY-start.y,distance=Math.hypot(dx,dy);pad.classList.remove("active");if(distance<14){key("DPAD_CENTER")}else{const horizontal=Math.abs(dx)>Math.abs(dy),name=horizontal?(dx>0?"DPAD_RIGHT":"DPAD_LEFT"):(dy>0?"DPAD_DOWN":"DPAD_UP"),count=Math.min(8,Math.max(1,Math.round(distance/48)));key(name,count)}start=null});
+  pad.addEventListener("pointercancel",()=>{start=null;pad.classList.remove("active")});
+  pad.addEventListener("keydown",event=>{const map={ArrowUp:"DPAD_UP",ArrowDown:"DPAD_DOWN",ArrowLeft:"DPAD_LEFT",ArrowRight:"DPAD_RIGHT",Enter:"DPAD_CENTER"," ":"DPAD_CENTER"};if(map[event.key]){event.preventDefault();key(map[event.key])}});
+  document.addEventListener("keydown",event=>{if(event.target.matches("textarea,input,[contenteditable=true],button")||event.metaKey||event.ctrlKey||event.altKey)return;const map={ArrowUp:"DPAD_UP",ArrowDown:"DPAD_DOWN",ArrowLeft:"DPAD_LEFT",ArrowRight:"DPAD_RIGHT",Enter:"DPAD_CENTER",Escape:"BACK",Backspace:"BACK"," ":"MEDIA_PLAY_PAUSE"};if(map[event.key]){event.preventDefault();key(map[event.key])}});
+  const appNames={"com.gathin.tvhome":"Clean TV Home","com.netflix.ninja":"Netflix","com.google.android.youtube.tv":"YouTube","com.spotify.tv.android":"Spotify"};
+  async function refresh(){try{const response=await fetch(base+"api/status",{cache:"no-store"});if(!response.ok)throw new Error(String(response.status));const state=await response.json();dot.classList.toggle("on",state.available);const app=appNames[state.current_app]||(state.current_app?state.current_app.split(".").pop():"");const volume=Number.isInteger(state.volume)?" · Vol "+state.volume+(state.muted?" muted":""):"";statusEl.textContent=state.last_error||(state.available?((state.is_on?"TV on":"TV standby")+(app?" · "+app:"")+volume):"TV unavailable")}catch(error){dot.classList.remove("on");statusEl.textContent="Mac bridge unavailable"}}
+  refresh();setInterval(refresh,2000);
+})();
 </script>
 </body>
 </html>

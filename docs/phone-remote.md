@@ -1,4 +1,4 @@
-# Phone remote and backlight bridge
+# Phone remote
 
 [Back to the README](../README.md)
 
@@ -24,12 +24,31 @@ http://192.168.1.50:8765/r/a-long-random-token/
 ```
 
 Open that exact address on the phone. On iPhone, Safari's **Share → Add to Home Screen** makes it behave like a
-small remote app. Stop the bridge with Ctrl-C; its browser port closes immediately. The pairing certificate can
-be reused later. Delete `work/phone-remote/` to forget the pairing and browser link.
+small remote app with the bundled Clean TV icon. Stop the bridge with Ctrl-C; its browser port closes immediately.
+The pairing certificate can be reused later. Delete `work/phone-remote/` to forget the pairing and browser link.
 
-The remote provides D-pad, OK, Back, Home, power, volume, playback, text entry and shortcuts to the six dock
-apps. App shortcuts use public deep links because launching package IDs through Remote Service is unreliable on
-some current Play Store builds.
+The remote provides a D-pad, swipe touchpad, OK, Back, Home, power, volume, playback, channel and TV controls,
+a number pad, text entry and shortcuts to the six dock apps. App shortcuts use public deep links because
+launching package IDs through Remote Service is unreliable on some current Play Store builds.
+
+## Type or paste on the TV
+
+1. Open a search, username or other editable field on the TV so its cursor is active.
+2. Type in the phone remote's **Type or paste on TV** box. You can also long-press the box and use the phone's
+   normal **Paste** action. The dedicated Paste button uses the browser clipboard when that permission is
+   available and otherwise focuses the box for long-press paste.
+3. Choose **Send text**, or **Send + Enter** to submit the field immediately. Text can be up to 1,000 characters.
+
+Space, Delete, Clear and Enter are available as individual remote keys. Android Remote IME can only write into
+an editable field that is focused; it cannot draw text over a video or arbitrary screen. Some protected password
+fields and DRM streaming apps deliberately reject remote text. The physical remote remains the fallback there.
+
+## Always-on Raspberry Pi host
+
+The same bridge can run as a hardened systemd service on an always-on Raspberry Pi, so the Mac can sleep. The
+installer and service are in [`deploy/raspberry-pi/`](../deploy/raspberry-pi/). Copy the existing pairing files
+directly over SSH to avoid pairing again; never commit them. The service runs without root, is restricted to LAN
+addresses and stores its private state outside the repository.
 
 ## Security model
 
@@ -49,32 +68,6 @@ On TCL sets the Remote Service can become unavailable in standby. If the TV offe
 and energy → Screenless service**, enabling it may keep network remote wake available; leaving it off saves the
 most standby power.
 
-## Backlight control
-
-A strip that uses USB only for power cannot receive colours or animation commands. The TV cannot make that kind
-of strip follow the picture in software. Do not power a long or bright addressable strip directly from the TV's
-USB port: use the strip manufacturer's correctly rated supply and fuse.
-
-The bridge supports a local [WLED](https://kno.wled.ge/) controller when the strip has a controllable data input:
-
-```bash
-TV_HOST=192.168.1.50 tools/phone-remote.sh --wled http://wled.local
-```
-
-The phone then gets colour, brightness and power controls. **Follow the active TV app** changes the backlight to
-an app colour (Araxda violet on Home, red for Netflix/YouTube, cyan for Disney+, purple for Max, blue for Prime
-Video and green for Spotify). This is app-aware ambient lighting, not per-frame image sampling.
-
-True frame-by-frame sync needs an addressable controller plus one of these sources:
-
-- an HDMI 2.0/2.1 capture-and-split path feeding HyperHDR/Hyperion, sized for the required resolution, HDR and
-  refresh rate; or
-- a camera/light sensor aimed at the screen, with lower fidelity but no HDMI/DRM compatibility problem.
-
-Android screen capture is not a dependable source because Netflix and other DRM apps deliberately return a
-black protected video layer. Before buying anything, identify the strip's connector/controller and its voltage;
-USB power alone does not reveal whether it is 5 V addressable, analog RGB, or a fixed-colour strip.
-
 ## Troubleshooting
 
 - No pairing code: confirm the TV's Android TV Remote Service is enabled and the phone/Mac are on the same LAN.
@@ -83,3 +76,5 @@ USB power alone does not reveal whether it is 5 V addressable, analog RGB, or a 
   isolation/guest Wi-Fi for these three devices. Never solve this by forwarding the port to the internet.
 - Netflix ignores navigation: that is a known Remote Service limitation on some builds; the physical remote
   remains available.
+- Text does not appear: first use the D-pad or touchpad to focus a text field on the TV. Protected fields and
+  some apps do not accept Android Remote IME input.

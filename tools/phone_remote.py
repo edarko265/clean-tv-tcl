@@ -19,9 +19,6 @@ import stat
 import sys
 import threading
 import time
-import urllib.error
-import urllib.parse
-import urllib.request
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from http import HTTPStatus
@@ -32,13 +29,33 @@ from typing import Any
 
 ALLOWED_KEYS = frozenset(
     {
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "APP_SWITCH",
         "BACK",
+        "CAPTIONS",
+        "CHANNEL_DOWN",
+        "CHANNEL_UP",
+        "CLEAR",
+        "DEL",
         "DPAD_CENTER",
         "DPAD_DOWN",
         "DPAD_LEFT",
         "DPAD_RIGHT",
         "DPAD_UP",
+        "ENTER",
+        "FORWARD_DEL",
+        "GUIDE",
         "HOME",
+        "INFO",
         "MEDIA_FAST_FORWARD",
         "MEDIA_NEXT",
         "MEDIA_PAUSE",
@@ -47,13 +64,21 @@ ALLOWED_KEYS = frozenset(
         "MEDIA_PREVIOUS",
         "MEDIA_REWIND",
         "MEDIA_STOP",
+        "MENU",
         "MUTE",
         "POWER",
+        "SEARCH",
+        "SETTINGS",
+        "SPACE",
+        "TAB",
+        "TV_INPUT",
         "VOLUME_DOWN",
         "VOLUME_MUTE",
         "VOLUME_UP",
     }
 )
+
+TEXT_LIMIT = 1000
 
 APP_LINKS = {
     "netflix": "netflix://",
@@ -63,17 +88,6 @@ APP_LINKS = {
     "prime": "https://app.primevideo.com",
     "spotify": "spotify://",
 }
-
-APP_COLORS = (
-    ("com.netflix", (229, 9, 20)),
-    ("com.google.android.youtube", (255, 0, 0)),
-    ("com.disney", (0, 174, 239)),
-    ("com.wbd", (110, 80, 255)),
-    ("com.amazon", (0, 168, 225)),
-    ("com.spotify", (29, 185, 84)),
-    ("com.gathin.tvhome", (109, 103, 174)),
-)
-
 
 def private_client(address: str) -> bool:
     """Return whether an HTTP peer is local/private, including IPv4-mapped IPv6."""
@@ -85,13 +99,6 @@ def private_client(address: str) -> bool:
     if isinstance(ip, ipaddress.IPv6Address) and ip.ipv4_mapped:
         ip = ip.ipv4_mapped
     return ip.is_private or ip.is_loopback or ip.is_link_local
-
-
-def app_color(package: str) -> tuple[int, int, int]:
-    for prefix, color in APP_COLORS:
-        if package.startswith(prefix):
-            return color
-    return (95, 74, 139)
 
 
 def secure_data_dir(path: Path) -> None:
@@ -126,15 +133,6 @@ def local_address_for(tv_host: str) -> str:
         sock.close()
 
 
-def parse_wled_url(value: str) -> str:
-    parsed = urllib.parse.urlsplit(value)
-    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
-        raise ValueError("WLED address must be an http(s) URL, for example http://192.168.1.60")
-    if parsed.username or parsed.password or parsed.query or parsed.fragment:
-        raise ValueError("WLED address must not contain credentials, a query or a fragment")
-    return urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, parsed.path.rstrip("/"), "", ""))
-
-
 @dataclass
 class BridgeState:
     available: bool = False
@@ -142,8 +140,6 @@ class BridgeState:
     current_app: str = ""
     volume: int | None = None
     muted: bool = False
-    led_configured: bool = False
-    led_sync: bool = True
     last_error: str = ""
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
@@ -160,43 +156,8 @@ class BridgeState:
                 "current_app": self.current_app,
                 "volume": self.volume,
                 "muted": self.muted,
-                "led_configured": self.led_configured,
-                "led_sync": self.led_sync,
                 "last_error": self.last_error,
             }
-
-
-class WledClient:
-    def __init__(self, base_url: str) -> None:
-        self.endpoint = parse_wled_url(base_url) + "/json/state"
-
-    def set_color(self, color: tuple[int, int, int], brightness: int = 128) -> None:
-        brightness = max(1, min(255, int(brightness)))
-        body = json.dumps(
-            {"on": True, "bri": brightness, "transition": 6, "seg": [{"col": [[*color]]}]},
-            separators=(",", ":"),
-        ).encode("utf-8")
-        request = urllib.request.Request(
-            self.endpoint,
-            data=body,
-            method="POST",
-            headers={"Content-Type": "application/json", "User-Agent": "CleanTVTCL-PhoneRemote/1"},
-        )
-        with urllib.request.urlopen(request, timeout=2) as response:
-            if not 200 <= response.status < 300:
-                raise OSError(f"WLED returned HTTP {response.status}")
-
-    def set_on(self, enabled: bool) -> None:
-        body = json.dumps({"on": bool(enabled)}, separators=(",", ":")).encode("utf-8")
-        request = urllib.request.Request(
-            self.endpoint,
-            data=body,
-            method="POST",
-            headers={"Content-Type": "application/json", "User-Agent": "CleanTVTCL-PhoneRemote/1"},
-        )
-        with urllib.request.urlopen(request, timeout=2) as response:
-            if not 200 <= response.status < 300:
-                raise OSError(f"WLED returned HTTP {response.status}")
 
 
 class CommandSink:
@@ -241,11 +202,13 @@ class RemoteServer(ThreadingHTTPServer):
         token: str,
         state: BridgeState,
         sink: CommandSink,
+        assets: dict[str, tuple[str, bytes]] | None = None,
     ) -> None:
         self.page = page
         self.prefix = f"/r/{token}/"
         self.state = state
         self.sink = sink
+        self.assets = assets or {}
         self.limiter = RequestLimiter()
         super().__init__(address, RemoteHandler)
 
@@ -261,7 +224,7 @@ class RemoteHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(length))
         self.send_header("Cache-Control", "no-store")
-        self.send_header("Content-Security-Policy", "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
+        self.send_header("Content-Security-Policy", "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
@@ -296,6 +259,10 @@ class RemoteHandler(BaseHTTPRequestHandler):
             body = self.server.page.replace(b"__REMOTE_BASE__", self.server.prefix.encode("ascii"))
             self._headers(HTTPStatus.OK, "text/html; charset=utf-8", len(body))
             self.wfile.write(body)
+        elif route in self.server.assets:
+            content_type, body = self.server.assets[route]
+            self._headers(HTTPStatus.OK, content_type, len(body))
+            self.wfile.write(body)
         elif route == "api/status":
             self._json(HTTPStatus.OK, {"ok": True, **self.server.state.snapshot()})
         else:
@@ -311,7 +278,7 @@ class RemoteHandler(BaseHTTPRequestHandler):
             size = int(self.headers.get("Content-Length", "0"))
         except ValueError:
             size = 0
-        if size < 2 or size > 4096:
+        if size < 2 or size > 16384:
             self._json(HTTPStatus.BAD_REQUEST, {"ok": False})
             return
         try:
@@ -319,28 +286,22 @@ class RemoteHandler(BaseHTTPRequestHandler):
         except (UnicodeDecodeError, json.JSONDecodeError):
             self._json(HTTPStatus.BAD_REQUEST, {"ok": False})
             return
+        if not isinstance(value, dict):
+            self._json(HTTPStatus.BAD_REQUEST, {"ok": False})
+            return
         route = self.path[len(self.server.prefix) :].split("?", 1)[0]
         command: tuple[str, Any] | None = None
         if route == "api/key" and value.get("key") in ALLOWED_KEYS:
-            command = ("key", value["key"])
+            count = value.get("count", 1)
+            if isinstance(count, int) and not isinstance(count, bool) and 1 <= count <= 20:
+                command = ("keys", (value["key"], count))
         elif route == "api/app" and value.get("app") in APP_LINKS:
             command = ("app", value["app"])
-        elif route == "api/text" and isinstance(value.get("text"), str) and 0 < len(value["text"]) <= 256:
-            command = ("text", value["text"])
-        elif route == "api/led" and self.server.state.snapshot()["led_configured"]:
-            action = value.get("action")
-            if action == "sync":
-                command = ("led_sync", bool(value.get("enabled")))
-            elif action == "power":
-                command = ("led_power", bool(value.get("enabled")))
-            elif action == "color" and isinstance(value.get("color"), str):
-                word = value["color"]
-                if len(word) == 7 and word.startswith("#"):
-                    try:
-                        rgb = tuple(int(word[pos : pos + 2], 16) for pos in (1, 3, 5))
-                        command = ("led_color", (rgb, int(value.get("brightness", 128))))
-                    except (TypeError, ValueError):
-                        command = None
+        elif route == "api/text" and isinstance(value.get("text"), str):
+            text = value["text"]
+            submit = value.get("submit", False)
+            if 0 < len(text) <= TEXT_LIMIT and "\x00" not in text and isinstance(submit, bool):
+                command = ("text_submit" if submit else "text", text)
         if command is None:
             self._json(HTTPStatus.BAD_REQUEST, {"ok": False})
         elif not self.server.sink.put(*command):
@@ -357,47 +318,26 @@ async def pair(remote: Any) -> None:
     await remote.async_finish_pairing(code.strip())
 
 
-async def command_worker(
-    queue: asyncio.Queue[tuple[str, Any]], remote: Any, state: BridgeState, wled: WledClient | None
-) -> None:
+async def command_worker(queue: asyncio.Queue[tuple[str, Any]], remote: Any, state: BridgeState) -> None:
     while True:
         kind, value = await queue.get()
         try:
-            if kind == "key":
-                remote.send_key_command(value)
+            if kind == "keys":
+                key, count = value
+                for _ in range(count):
+                    remote.send_key_command(key)
             elif kind == "app":
                 remote.send_launch_app_command(APP_LINKS[value])
             elif kind == "text":
                 remote.send_text(value)
-            elif kind == "led_sync":
-                state.update(led_sync=value)
-            elif kind == "led_power" and wled:
-                await asyncio.to_thread(wled.set_on, value)
-            elif kind == "led_color" and wled:
-                color, brightness = value
-                state.update(led_sync=False)
-                await asyncio.to_thread(wled.set_color, color, brightness)
+            elif kind == "text_submit":
+                remote.send_text(value)
+                remote.send_key_command("ENTER")
             state.update(last_error="")
         except Exception as exc:  # keep the bridge alive and avoid leaking network details to the phone
             state.update(last_error=f"{kind} command failed: {type(exc).__name__}")
         finally:
             queue.task_done()
-
-
-async def app_light_worker(state: BridgeState, wled: WledClient | None) -> None:
-    previous = ""
-    while True:
-        await asyncio.sleep(0.5)
-        snapshot = state.snapshot()
-        current = snapshot["current_app"]
-        if not wled or not snapshot["led_sync"] or not current or current == previous:
-            continue
-        previous = current
-        try:
-            await asyncio.to_thread(wled.set_color, app_color(current), 128)
-            state.update(last_error="")
-        except (OSError, urllib.error.URLError) as exc:
-            state.update(last_error=f"LED sync failed: {type(exc).__name__}")
 
 
 def volume_values(info: Any) -> tuple[int | None, bool]:
@@ -417,13 +357,13 @@ async def run(args: argparse.Namespace) -> None:
     data_dir = Path(args.data_dir).expanduser().resolve()
     secure_data_dir(data_dir)
     token = load_or_create_token(data_dir / "browser-token")
-    state = BridgeState(led_configured=bool(args.wled))
-    wled = WledClient(args.wled) if args.wled else None
+    state = BridgeState()
     remote = AndroidTVRemote(
         "Clean TV TCL Phone Remote",
         str(data_dir / "client-cert.pem"),
         str(data_dir / "client-key.pem"),
         args.tv,
+        enable_ime=True,
         enable_voice=False,
     )
     generated = await remote.async_generate_cert_if_missing()
@@ -448,27 +388,29 @@ async def run(args: argparse.Namespace) -> None:
     )
     remote.keep_reconnecting()
 
-    page_path = Path(__file__).with_name("phone-remote") / "index.html"
+    asset_dir = Path(__file__).with_name("phone-remote")
+    page_path = asset_dir / "index.html"
     page = page_path.read_bytes()
+    assets = {
+        "manifest.webmanifest": ("application/manifest+json; charset=utf-8", (asset_dir / "manifest.webmanifest").read_bytes()),
+        "icon-192.png": ("image/png", (asset_dir / "icon-192.png").read_bytes()),
+        "icon-512.png": ("image/png", (asset_dir / "icon-512.png").read_bytes()),
+    }
     queue: asyncio.Queue[tuple[str, Any]] = asyncio.Queue(maxsize=128)
     loop = asyncio.get_running_loop()
-    server = RemoteServer((args.bind, args.port), page, token, state, CommandSink(loop, queue))
+    server = RemoteServer((args.bind, args.port), page, token, state, CommandSink(loop, queue), assets)
     thread = threading.Thread(target=server.serve_forever, name="phone-remote-http", daemon=True)
     thread.start()
     address = local_address_for(args.tv)
     print(f"Phone remote: http://{address}:{args.port}{server.prefix}")
     print("Private LAN only. Press Ctrl-C to stop; the browser server then closes immediately.")
-    if wled:
-        print("WLED app-aware lighting is enabled; manual colour control is available on the phone.")
-    worker = asyncio.create_task(command_worker(queue, remote, state, wled))
-    lights = asyncio.create_task(app_light_worker(state, wled))
+    worker = asyncio.create_task(command_worker(queue, remote, state))
     try:
         await asyncio.Event().wait()
     finally:
         server.shutdown()
         server.server_close()
         worker.cancel()
-        lights.cancel()
         remote.disconnect()
 
 
@@ -481,7 +423,6 @@ def parser() -> argparse.ArgumentParser:
         "--data-dir", default=str(Path(__file__).resolve().parent.parent / "work" / "phone-remote"),
         help="private certificate/token directory (default: ignored work/phone-remote)",
     )
-    result.add_argument("--wled", help="optional WLED base URL, for example http://192.168.1.60")
     return result
 
 
