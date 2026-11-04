@@ -424,8 +424,13 @@ final class Config {
         return GLASS_HALO.equalsIgnoreCase(v) ? GLASS_HALO : GLASS_DEFAULT;
     }
 
-    /** The folder the theme tools push into; null when external storage is unavailable. */
+    /** The active theme folder: Personal on external storage, or an installed gallery pack. */
     static File dir(Context ctx) {
+        return ThemeLibrary.activeDir(ctx, externalDir(ctx));
+    }
+
+    /** The Personal folder the computer theme tools push into; never redirected to a gallery pack. */
+    static File externalDir(Context ctx) {
         return ctx.getExternalFilesDir(null);
     }
 

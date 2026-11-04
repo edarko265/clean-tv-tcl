@@ -14,7 +14,7 @@
 > [!IMPORTANT]
 > This repository is an independent customization of [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv). It preserves the complete upstream operating guide below because its documentation is part of the tested safety contract. Custom work starts on `dev`; nothing merges into `main` without explicit approval from [@edarko265](https://github.com/edarko265).
 
-The custom direction adds TCL Android TV 11 validation, local theme selection, and an original [ARAXDA](https://araxda.com)-inspired cyber-engineering pack using near-black, violet, chip, and operations-grid imagery. Live AI, movie, and sports content will be isolated in opt-in add-ons so the launcher itself remains small, offline, and free of analytics.
+The custom direction adds TCL Android TV 11 validation, local theme selection, and an 18-pack offline gallery led by an original [ARAXDA](https://araxda.com)-inspired cyber-engineering pack using near-black, violet, chips, microcontrollers and robotics. Live AI, movie, and sports content will be isolated in opt-in add-ons so the launcher itself remains small, offline, and free of analytics.
 
 ```mermaid
 flowchart LR
@@ -31,11 +31,11 @@ flowchart LR
 
 | Area | Status | Policy |
 |---|---:|---|
-| TCL cleanup and restore plan | 🟡 Device discovery | No mutations before backup and package review |
-| Araxda cyber theme | 🟣 Draft asset ready | Ships only after a real-TV screenshot and readability test |
+| TCL cleanup and restore plan | 🟢 G07 validated | Reversible disable list, restore record and custom Home verified on Android TV 11 |
+| Araxda cyber theme | 🟣 Live on TV | Upgraded 1080p art and remote-selectable offline gallery verified on the TCL |
 | SmartTube | 🟠 Verification hold | No bundling after the maintainer's disclosed build/signing incident |
 | Sonarr | 🔵 Companion-service design | Run on a NAS/server, not on the television |
-| Theme and game ideas | ⚪ Planned | See the [roadmap](docs/ROADMAP.md) |
+| Theme and game ideas | 🟣 Gallery shipped | 18 public packs plus private Personal; game layer remains on the [roadmap](docs/ROADMAP.md) |
 
 Project governance: [GOVERNANCE.md](GOVERNANCE.md) · security: [SECURITY.md](SECURITY.md) · support: [SUPPORT.md](SUPPORT.md) · attribution: [NOTICE.md](NOTICE.md)
 
@@ -248,6 +248,7 @@ tools/theme.sh themes/aurora                                 # push a theme; --r
 | [`tools/philips-api.py`](tools/philips-api.py) | Philips only: checks that the JointSpace control API Home Assistant uses still answers, before and after a debloat (`tools/venv/bin/python -I tools/philips-api.py <tv ip>`). Port 1926 over HTTPS first, then 1925; reads only what answers without pairing. |
 | [`tools/privacy.py`](tools/privacy.py) | Audits the TV for voice, ACR and telemetry candidates and prints the evidence for each; `--write` turns the findings into a list `disable.sh` and `restore.sh` already understand. |
 | [`tools/theme.sh`](tools/theme.sh), [`theme_restart.py`](tools/theme_restart.py) | Push a folder from [`themes/`](themes/) to the launcher and restart Home. |
+| [`tools/theme-library.sh`](tools/theme-library.sh) | Install an offline on-TV theme gallery; after this one transfer, switch packs with the remote in Launcher settings. |
 | [`tools/build-private-slideshow.sh`](tools/build-private-slideshow.sh) | Locally turn private photos and short videos into metadata-free 1080p slideshow frames for an ignored personal theme. |
 | [`tools/manage.py`](tools/manage.py) | List every add-on, theme and switch with its screenshot, see what is on the TV, and install, update or remove one by running its creator's own script. |
 | [`tools/bench.py`](tools/bench.py) | Measures the launcher that answers HOME: key latency, how far the focus moved, janky frames, cold start, return to Home, and the idle CPU and PSS it costs. Changes nothing on the TV and writes the raw per-key numbers to JSON; no extra install. |

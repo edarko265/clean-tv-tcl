@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "themes": [
+    {"id":"araxda-cyber","name":"Araxda Cyber Engineering","description":"Purple cyber-operations and engineering glass"},
+    {"id":"trending-cinema","name":"Trending Cinema","description":"Minimal cinema shelf for trending films"},
+    {"id":"ai-frontier","name":"AI Frontier","description":"Robotics, agents and computational intelligence"},
+    {"id":"terminal-classic","name":"Classic Terminal","description":"Old-tech red terminal grid"},
+    {"id":"horror-night","name":"Horror Night","description":"Haunted midnight atmosphere"},
+    {"id":"blockbuster-spectacle","name":"Blockbuster Spectacle","description":"Epic cinematic adventure"},
+    {"id":"football-night","name":"Football Match Night","description":"Floodlights, rain and tactical play"},
+    {"id":"tactical-extraction","name":"Tactical Extraction","description":"Original covert extraction-zone aesthetic"},
+    {"id":"ghana-africa","name":"Ghana / Africa Forward","description":"Contemporary Accra and African engineering"},
+    {"id":"malta","name":"Malta Blue Hour","description":"Valletta harbour at blue hour"},
+    {"id":"liquid-glass","name":"Liquid Glass","description":"Quiet translucent glass and colour"},
+    {"id":"wasteland","name":"Wasteland","description":"Solar resilience after the storm"},
+    {"id":"zombie-apocalypse","name":"Zombie Apocalypse","description":"Atmospheric survival dawn without gore"},
+    {"id":"nordic-aurora","name":"Nordic Aurora","description":"Finnish winter calm beneath the northern lights"},
+    {"id":"abyssal-lab","name":"Abyssal Robotics Lab","description":"Deep-ocean research and underwater robotics"},
+    {"id":"orbital-foundry","name":"Orbital Foundry","description":"Autonomous engineering at the edge of space"},
+    {"id":"neon-arcade","name":"Neon Arcade","description":"Original retro-futurist game-night atmosphere"},
+    {"id":"bioelectric-jungle","name":"Bioelectric Jungle","description":"Living circuits and environmental robotics"}
+  ]
+}

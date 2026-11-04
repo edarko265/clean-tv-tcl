@@ -35,6 +35,7 @@ public final class LauncherSettingsActivity extends Activity {
     private static final String[] CLOCK_FORMATS = {"system", "12", "24"};
     private final TextView[] clockChoices = new TextView[CLOCK_FORMATS.length];
     private TextView wallpaperChoice;
+    private TextView themeChoice;
     private TextView animationsChoice;
     private TextView advancedChoice;
     private TextView followThemeChoice;
@@ -123,6 +124,8 @@ public final class LauncherSettingsActivity extends Activity {
             reverseRow(dockChoices);
             reverseRow(clockChoices);
         }
+        themeChoice = findViewById(R.id.themeChoice);
+        themeChoice.setOnClickListener(v -> showThemePicker());
         wallpaperChoice = findViewById(R.id.wallpaperChoice);
         wallpaperChoice.setOnClickListener(v -> showWallpaperPicker());
         animationsChoice = findViewById(R.id.animationsChoice);
@@ -155,18 +158,7 @@ public final class LauncherSettingsActivity extends Activity {
         followThemeChoice = findViewById(R.id.followThemeChoice);
         followThemeChoice.setOnClickListener(v -> {
             if (!hasOnTvChoices()) return;
-            choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
-                    .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove(Config.DOCK_OPACITY_KEY).remove(Config.CLOCK_FORMAT_KEY).remove(OpenOnStart.KEY).commit();
-            Config current = Config.load(this);
-            columns = current.columns;
-            rowsBelowDock = current.rowsBelowDock;
-            dockOpacity = current.dockOpacity;
-            clockFormat = current.clockFormat;
-            animations = current.animations;
-            advancedEffects = current.animations && current.advancedEffects;
-            changed();
-            refresh();
+            followTheme();
         });
         findViewById(R.id.defaultHomeChoice).setOnClickListener(v ->
                 open(new Intent(this, HomeSettingsActivity.class)));
@@ -214,6 +206,35 @@ public final class LauncherSettingsActivity extends Activity {
                     choices.edit().remove(Config.WALLPAPER_CHOICE_KEY).apply();
                     changed();
                     refresh();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    /** Installed once beside the APK, then switched entirely on the TV with the remote. */
+    private void showThemePicker() {
+        List<ThemeLibrary.Theme> themes = ThemeLibrary.themes(this);
+        if (themes.isEmpty()) {
+            Toast.makeText(this, R.string.not_available, Toast.LENGTH_LONG).show();
+            return;
+        }
+        String[] labels = new String[themes.size()];
+        int checked = -1;
+        String current = ThemeLibrary.currentId(this);
+        for (int i = 0; i < themes.size(); i++) {
+            ThemeLibrary.Theme theme = themes.get(i);
+            labels[i] = theme.name;
+            if (theme.id.equals(current)) checked = i;
+        }
+        new AlertDialog.Builder(this)
+                .setSingleChoiceItems(labels, checked, (dialog, which) -> {
+                    ThemeLibrary.Theme selected = themes.get(which);
+                    if (!ThemeLibrary.apply(this, selected.id)) {
+                        Toast.makeText(this, R.string.not_available, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    dialog.dismiss();
+                    followTheme();
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
@@ -311,6 +332,7 @@ public final class LauncherSettingsActivity extends Activity {
                 getString(advancedEffects ? R.string.on : R.string.off)));
         advancedChoice.setEnabled(animations);
         advancedChoice.setAlpha(animations ? 1f : 0.5f);
+        themeChoice.setText(getString(R.string.theme_state, ThemeLibrary.currentName(this)));
         String wallpaperCurrent = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
         wallpaperChoice.setText(getString(R.string.wallpaper_state,
                 "none".equals(wallpaperCurrent) ? getString(R.string.wallpaper_none)
@@ -325,6 +347,21 @@ public final class LauncherSettingsActivity extends Activity {
                 || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
                 || choices.contains(Config.CLOCK_FORMAT_KEY) || choices.contains(OpenOnStart.KEY);
+    }
+
+    private void followTheme() {
+        choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
+                .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
+                .remove(Config.DOCK_OPACITY_KEY).remove(Config.CLOCK_FORMAT_KEY).remove(OpenOnStart.KEY).commit();
+        Config current = Config.load(this);
+        columns = current.columns;
+        rowsBelowDock = current.rowsBelowDock;
+        dockOpacity = current.dockOpacity;
+        clockFormat = current.clockFormat;
+        animations = current.animations;
+        advancedEffects = current.animations && current.advancedEffects;
+        changed();
+        refresh();
     }
 
     private void open(Intent intent) {

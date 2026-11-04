@@ -49,4 +49,27 @@ public class ThemeFilesTest {
         assertFalse(ThemeFiles.isCollection(Arrays.asList("wallpapers", "dusk.jpg")));
         assertFalse(ThemeFiles.isCollection(Collections.singletonList("config.json")));
     }
+
+    @Test public void libraryCatalogAndThemeFilesAreAllowed() {
+        assertEquals("catalog.json", ThemeFiles.libraryPath(Arrays.asList("library", "catalog.json")));
+        assertEquals("ai-frontier/config.json",
+                ThemeFiles.libraryPath(Arrays.asList("library", "ai-frontier", "config.json")));
+        assertEquals("ai-frontier/wallpaper.jpg",
+                ThemeFiles.libraryPath(Arrays.asList("library", "ai-frontier", "wallpaper.jpg")));
+        assertEquals("ai-frontier/wallpapers/Night_2.WEBP",
+                ThemeFiles.libraryPath(Arrays.asList("library", "ai-frontier", "wallpapers", "Night_2.WEBP")));
+        assertEquals("ai-frontier/wallpapers/captions.txt",
+                ThemeFiles.libraryPath(Arrays.asList("library", "ai-frontier", "wallpapers", "captions.txt")));
+    }
+
+    @Test public void unsafeOrUnknownLibraryPathsAreRefused() {
+        assertNull(ThemeFiles.libraryPath(null));
+        assertNull(ThemeFiles.libraryPath(Collections.emptyList()));
+        assertNull(ThemeFiles.libraryPath(Collections.singletonList("library")));
+        assertNull(ThemeFiles.libraryPath(Arrays.asList("library", "../personal", "config.json")));
+        assertNull(ThemeFiles.libraryPath(Arrays.asList("library", "UPPER", "config.json")));
+        assertNull(ThemeFiles.libraryPath(Arrays.asList("library", "ai-frontier", "notes.txt")));
+        assertNull(ThemeFiles.libraryPath(Arrays.asList("library", "ai-frontier", "wallpapers", "../x.jpg")));
+        assertNull(ThemeFiles.libraryPath(Arrays.asList("other", "catalog.json")));
+    }
 }

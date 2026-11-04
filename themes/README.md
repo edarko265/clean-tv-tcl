@@ -12,9 +12,14 @@ TV_HOST=192.168.1.50 tools/theme.sh --reset                # back to the built-i
 powershell -ExecutionPolicy Bypass -File tools\theme.ps1 -TvHost 192.168.1.50 themes\aurora
 ```
 
+This fork also has an offline on-TV gallery with 18 public packs, plus the private Personal entry.
+Install its packs once with
+`TV_HOST=<tv-ip> tools/theme-library.sh`; afterward use **Launcher settings → Theme gallery** with the
+remote. The current computer-pushed theme stays untouched as the private Personal entry.
+
 `tools/venv/bin/python -I tools/manage.py list themes` and `list switches` list them from this file, `show <name>` gives one with its
 screenshot, and `manage.py set <switch> <value> --theme <your folder>` writes a key into a theme folder of your own
-and pushes it with `theme.sh` (`theme.ps1` on Windows). The folder has to be outside this checkout: one under `themes/` or `examples/` is
+and pushes it with `theme.sh` (`theme.ps1` on Windows). The folder has to be outside this checkout: one under `themes/`, `theme-library/` or `examples/` is
 refused (copy a theme first), a `config.json` it cannot read is named before anything is written or pushed, and a
 folder that is not there is refused too rather than made - an empty folder of your own is fine, `set` starts the
 `config.json` in it. Pushing replaces the theme on the TV and empties the pictures it pushed before, so a mistyped

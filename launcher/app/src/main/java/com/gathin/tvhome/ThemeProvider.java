@@ -23,7 +23,11 @@ public class ThemeProvider extends ContentProvider {
 
     private File file(Uri uri) throws FileNotFoundException {
         String path = ThemeFiles.path(uri.getPathSegments());
-        File dir = Config.dir(getContext());
+        File dir = Config.externalDir(getContext());
+        if (path == null) {
+            path = ThemeFiles.libraryPath(uri.getPathSegments());
+            dir = ThemeLibrary.dir(getContext());
+        }
         if (dir == null || path == null) throw new FileNotFoundException(String.valueOf(uri));
         File f = new File(dir, path);
         File parent = f.getParentFile();
@@ -35,6 +39,10 @@ public class ThemeProvider extends ContentProvider {
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         File f = file(uri);
         if (mode.contains("w")) {
+            // A computer-pushed current theme is the external/personal entry, not whichever library preset
+            // happened to be selected before the push. Library files use /library/... and do not come here.
+            if (ThemeFiles.path(uri.getPathSegments()) != null
+                    && Config.FILE_NAME.equals(uri.getLastPathSegment())) ThemeLibrary.markExternal(getContext());
             return ParcelFileDescriptor.open(f, ParcelFileDescriptor.MODE_WRITE_ONLY
                     | ParcelFileDescriptor.MODE_CREATE | ParcelFileDescriptor.MODE_TRUNCATE);
         }
@@ -43,7 +51,7 @@ public class ThemeProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        File dir = Config.dir(getContext());
+        File dir = Config.externalDir(getContext());
         if (dir != null && ThemeFiles.isCollection(uri.getPathSegments())) {
             File[] images = new File(dir, ThemeFiles.WALLPAPERS).listFiles((d, name) -> ThemeFiles.collectionImage(name));
             int n = 0;

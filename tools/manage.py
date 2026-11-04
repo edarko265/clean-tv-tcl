@@ -246,10 +246,10 @@ def value_as(key, item, text):
 
 # ---------------------------------------------------------------- the theme folder set writes into
 
-# Both folders hold config.json files this checkout ships and its tests hold to the launcher's readers
+# These folders hold config.json files this checkout ships and its tests hold to the launcher's readers
 # (tests/test_shipped_config_values.py): a theme author who pointed --theme at one would rewrite a tracked
 # file, and the edit would ride along in their next pull request.
-PROJECT_FOLDERS = ("themes", "examples")
+PROJECT_FOLDERS = ("themes", "theme-library", "examples")
 
 
 def reason(error):
