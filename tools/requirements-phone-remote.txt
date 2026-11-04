@@ -5,3 +5,5 @@ cryptography==50.0.2
 protobuf==7.36.2
 cffi==2.1.1
 pycparser==3.12
+# Pure-Python SVG output only; no Pillow or image uploads.
+qrcode==8.2

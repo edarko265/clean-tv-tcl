@@ -6,8 +6,8 @@ if [ "$(id -u)" -ne 0 ]; then
   echo "run with sudo: sudo ./install.sh <tv-ip>" >&2
   exit 2
 fi
-if [ "$#" -ne 1 ] || ! [[ "$1" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
-  echo "usage: sudo ./install.sh <tv-ip>" >&2
+if [ "$#" -lt 1 ] || [ "$#" -gt 3 ] || ! [[ "$1" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+  echo "usage: sudo ./install.sh <tv-ip> [public-base-url] [wyoming-host:port]" >&2
   exit 2
 fi
 
@@ -33,7 +33,12 @@ fi
 "$TARGET/venv/bin/python" -m pip install --disable-pip-version-check --upgrade \
   -r "$TARGET/requirements-phone-remote.txt"
 
-printf 'TV_HOST=%s\n' "$1" > /etc/clean-tv-remote
+{
+  printf 'TV_HOST=%s\n' "$1"
+  printf 'PUBLIC_BASE_URL=%s\n' "${2:-}"
+  printf 'WYOMING_WHISPER=%s\n' "${3:-}"
+  printf 'SERVICE_LINKS=%s\n' "$STATE/service-links.json"
+} > /etc/clean-tv-remote
 chmod 0600 /etc/clean-tv-remote
 install -m 0644 "$SOURCE/clean-tv-remote.service" /etc/systemd/system/clean-tv-remote.service
 systemctl daemon-reload

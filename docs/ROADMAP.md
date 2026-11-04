@@ -79,9 +79,9 @@ Live modes never receive launcher privileges. Each one is a separate app or LAN 
 
 ### Sonarr
 
-- [ ] Document a NAS/mini-PC deployment with authentication, restricted LAN exposure, backups, and legal-use guidance.
-- [ ] Integrate only through the chosen media client/library; do not run Sonarr on the TV.
-- [ ] Keep GPL-3.0 Sonarr code and binaries outside this MIT repository.
+- [x] Document a Pi deployment with tailnet-only admin access, external storage, backups, and legal-use guidance.
+- [x] Integrate only through Jellyfin/the phone companion; Sonarr runs on the Pi, never on the TV.
+- [x] Keep GPL-3.0 Sonarr code and binaries outside this MIT repository.
 
 ## Phase 5 — Games and living-room experiences
 
@@ -94,6 +94,9 @@ Candidates will be evaluated after the launcher and restore workflow are stable:
 - ambient dashboards, photo frames, weather, calendars, and home automation.
 
 Every candidate must pass controller mapping, Bluetooth stability, thermal/memory, network latency, privacy, licensing, and easy-removal checks on the actual TCL hardware.
+
+Prepared on the Pi: an owner-only legal-content tree, conservative RetroArch defaults and controller-profile
+guidance. Installation, real controller mapping and gameplay remain gated on temporary ADB access and physical TV testing.
 
 ## Release gate
 

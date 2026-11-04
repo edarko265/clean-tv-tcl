@@ -10,7 +10,7 @@ Group=clean-tv-remote
 WorkingDirectory=/opt/clean-tv-remote
 EnvironmentFile=/etc/clean-tv-remote
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/opt/clean-tv-remote/venv/bin/python -I /opt/clean-tv-remote/phone_remote.py --tv ${TV_HOST} --data-dir /var/lib/clean-tv-remote
+ExecStart=/opt/clean-tv-remote/venv/bin/python -I /opt/clean-tv-remote/phone_remote.py --tv ${TV_HOST} --data-dir /var/lib/clean-tv-remote --service-links=${SERVICE_LINKS} --wyoming-whisper=${WYOMING_WHISPER} --public-base-url=${PUBLIC_BASE_URL}
 Restart=on-failure
 RestartSec=4
 NoNewPrivileges=true

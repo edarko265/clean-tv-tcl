@@ -11,6 +11,8 @@ import threading
 import unittest
 import urllib.error
 import urllib.request
+import wave
+from io import BytesIO
 from pathlib import Path
 
 
@@ -65,6 +67,10 @@ class PhoneRemoteTest(unittest.TestCase):
         self.assertIn('rel="apple-touch-icon"', page)
         self.assertNotIn("WLED", page)
         self.assertNotIn("lighting", page.lower())
+        self.assertIn('id="voiceButton"', page)
+        self.assertIn("Audio goes to your Raspberry Pi", page)
+        self.assertIn('id="servicesCard"', page)
+        self.assertIn('src="onboarding.svg"', page)
 
     def test_full_key_allowlist_and_text_limit(self):
         for key in ("0", "9", "APP_SWITCH", "CAPTIONS", "CLEAR", "DEL", "ENTER", "GUIDE", "INFO", "MENU", "SETTINGS", "TV_INPUT"):
@@ -77,6 +83,7 @@ class PhoneRemoteTest(unittest.TestCase):
         server = PHONE_REMOTE.RemoteServer(
             ("127.0.0.1", 0), b"base=__REMOTE_BASE__", "secret-token", PHONE_REMOTE.BridgeState(), sink,
             {"icon.png": ("image/png", b"private-icon")},
+            {"jellyfin": PHONE_REMOTE.ServiceLink("jellyfin", "Jellyfin", "https://tv.example.test")},
         )
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
@@ -105,8 +112,20 @@ class PhoneRemoteTest(unittest.TestCase):
             )
             with urllib.request.urlopen(text_request, timeout=2) as response:
                 self.assertEqual(202, response.status)
+            service_request = urllib.request.Request(
+                root + "/r/secret-token/api/service",
+                data=b'{"service":"jellyfin"}',
+                method="POST",
+                headers={"Content-Type": "application/json"},
+            )
+            with urllib.request.urlopen(service_request, timeout=2) as response:
+                self.assertEqual(202, response.status)
             self.assertEqual(
-                [("keys", ("HOME", 1)), ("text_submit", "Akwaaba — hello 👋")],
+                [
+                    ("keys", ("HOME", 1)),
+                    ("text_submit", "Akwaaba — hello 👋"),
+                    ("link", "https://tv.example.test"),
+                ],
                 sink.commands,
             )
         finally:
@@ -118,11 +137,39 @@ class PhoneRemoteTest(unittest.TestCase):
         requirements = (ROOT / "tools/requirements-phone-remote.txt").read_text(encoding="utf-8")
         self.assertIn("androidtvremote2==0.3.2", requirements)
         self.assertIn("cryptography==50.0.2", requirements)
+        self.assertIn("qrcode==8.2", requirements)
         docs = (ROOT / "docs/phone-remote.md").read_text(encoding="utf-8")
         self.assertIn("Network ADB remains off", docs)
         self.assertIn("focused", docs)
         self.assertIn("1,000 characters", docs)
         self.assertNotIn("WLED", docs)
+
+    def test_private_service_links_are_validated(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "services.json"
+            path.write_text(
+                json.dumps([{"id": "jellyfin", "label": "Jellyfin", "url": "https://tv.example.test"}]),
+                encoding="utf-8",
+            )
+            links = PHONE_REMOTE.load_service_links(path)
+            self.assertEqual("Jellyfin", links["jellyfin"].label)
+            self.assertEqual("https://tv.example.test", links["jellyfin"].url)
+
+    def test_voice_wav_validation_rejects_stereo(self):
+        audio = BytesIO()
+        with wave.open(audio, "wb") as output:
+            output.setnchannels(2)
+            output.setsampwidth(2)
+            output.setframerate(16_000)
+            output.writeframes(b"\0\0" * 320)
+        transcriber = PHONE_REMOTE.VoiceTranscriber(("127.0.0.1", 1))
+        with self.assertRaisesRegex(ValueError, "mono 16-bit"):
+            transcriber.transcribe_wav(audio.getvalue())
+
+    def test_onboarding_qr_is_generated_as_svg(self):
+        image = PHONE_REMOTE.onboarding_svg("https://remote.example.test/r/secret-token/")
+        self.assertIn(b"<svg", image)
+        self.assertIn(b"<path", image)
 
 
 class CommandWorkerTest(unittest.IsolatedAsyncioTestCase):
