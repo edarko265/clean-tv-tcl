@@ -51,7 +51,7 @@
     <h2>Type or paste on TV</h2>
     <form id="textForm">
       <textarea id="text" maxlength="1000" enterkeyhint="send" autocapitalize="sentences" placeholder="Focus a search or login field on the TV, then type or paste here"></textarea>
-      <p class="hint">Works when an editable field is focused on the TV. Protected password fields and some streaming apps may block remote input.</p>
+      <p class="hint">Focus an editable field first. Phone typing connects only while sending, so the TV's normal on-screen keyboard remains available to the physical remote. Protected password fields and some streaming apps may still block remote input.</p>
       <div id="voicePanel" class="voice">
         <button type="button" id="voiceButton">🎙 Dictate locally</button>
         <p class="privacy"><span class="lock">●</span><span>Explicit tap only. Audio goes to your Raspberry Pi for transcription, is not saved, and never goes to a cloud AI service. Review the text before sending it to the TV.</span></p>
@@ -106,7 +106,7 @@
     button.addEventListener("keydown",event=>{if((event.key==="Enter"||event.key===" ")&&!event.repeat){event.preventDefault();key(button.dataset.key)}});
   });
   document.querySelectorAll("[data-app]").forEach(button=>button.addEventListener("click",()=>post("api/app",{app:button.dataset.app})));
-  async function sendText(submit){const text=textEl.value;if(!text){toast("Type or paste something first");textEl.focus();return}if(await post("api/text",{text,submit})){toast(submit?"Text sent, then Enter":"Text sent");textEl.value=""}}
+  async function sendText(submit){const text=textEl.value;if(!text){toast("Type or paste something first");textEl.focus();return}if(await post("api/text",{text,submit})){toast(submit?"Text queued, then Enter":"Text queued — check TV")}}
   document.querySelector("#textForm").addEventListener("submit",event=>{event.preventDefault();sendText(false)});
   document.querySelector("#sendEnter").addEventListener("click",()=>sendText(true));
   document.querySelector("#paste").addEventListener("click",async()=>{try{if(!navigator.clipboard?.readText)throw new Error("clipboard unavailable");const pasted=await navigator.clipboard.readText();if(!pasted)throw new Error("clipboard empty");textEl.value=(textEl.value+pasted).slice(0,1000);textEl.focus();toast("Pasted — tap Send when ready")}catch(error){textEl.focus();toast("Long-press the box and choose Paste")}});

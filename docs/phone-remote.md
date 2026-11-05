@@ -52,9 +52,14 @@ typing, but browsers intentionally withhold microphone access there.
    available and otherwise focuses the box for long-press paste.
 3. Choose **Send text**, or **Send + Enter** to submit the field immediately. Text can be up to 1,000 characters.
 
-Space, Delete, Clear and Enter are available as individual remote keys. Android Remote IME can only write into
-an editable field that is focused; it cannot draw text over a video or arbitrary screen. Some protected password
-fields and DRM streaming apps deliberately reject remote text. The physical remote remains the fallback there.
+Space, Delete, Clear and Enter are available as individual remote keys. The always-on control connection leaves
+Remote IME disabled so it does not suppress the TV's normal on-screen keyboard. An IME-capable connection opens
+only for an explicit text send, writes the text in small chunks, and disconnects again. The phone retains the text
+after queuing it so an app that ignores the first attempt does not make you type it again.
+
+Android Remote IME can only write into an editable field that is already focused; it cannot draw text over a video
+or arbitrary screen. Some protected password fields and DRM streaming apps deliberately reject remote text. Use
+the physical remote's on-screen keyboard for those fields.
 
 ## Always-on Raspberry Pi host
 
@@ -96,7 +101,10 @@ most standby power.
   isolation/guest Wi-Fi for these three devices. Never solve this by forwarding the port to the internet.
 - Netflix ignores navigation: that is a known Remote Service limitation on some builds; the physical remote
   remains available.
-- Text does not appear: first use the D-pad or touchpad to focus a text field on the TV. Protected fields and
-  some apps do not accept Android Remote IME input.
+- TV keyboard does not appear: update/restart the Pi bridge so its normal connection has Remote IME disabled, then
+  leave the field and select it again with the physical remote. Phone typing temporarily takes the field only while
+  a send is in progress.
+- Text does not appear: first use the physical D-pad or phone touchpad to focus a text field on the TV. Keep the
+  text in the phone box and retry once. Protected fields and some apps do not accept Android Remote IME input.
 - Dictation button is hidden: the host was not started with `--wyoming-whisper`. If it appears but the browser
   refuses the microphone, open the tailnet HTTPS URL rather than the direct HTTP address.

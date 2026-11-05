@@ -102,6 +102,52 @@ class ServiceLink:
     url: str
 
 
+class OnDemandTextSender:
+    """Use Remote IME only while text is sent, so the TV's own keyboard stays available."""
+
+    def __init__(
+        self,
+        remote_type: Any,
+        host: str,
+        certfile: str,
+        keyfile: str,
+        settle_seconds: float = 0.35,
+        chunk_seconds: float = 0.12,
+        flush_seconds: float = 0.3,
+    ) -> None:
+        self.remote_type = remote_type
+        self.host = host
+        self.certfile = certfile
+        self.keyfile = keyfile
+        self.settle_seconds = settle_seconds
+        self.chunk_seconds = chunk_seconds
+        self.flush_seconds = flush_seconds
+        self._lock = asyncio.Lock()
+
+    async def send(self, value: str, submit: bool = False) -> None:
+        """Connect an IME client briefly, send bounded chunks, then release the TV keyboard."""
+        async with self._lock:
+            remote = self.remote_type(
+                "Clean TV TCL Text Entry",
+                self.certfile,
+                self.keyfile,
+                self.host,
+                enable_ime=True,
+                enable_voice=False,
+            )
+            try:
+                await asyncio.wait_for(remote.async_connect(), timeout=8.0)
+                await asyncio.sleep(self.settle_seconds)
+                for offset in range(0, len(value), 80):
+                    remote.send_text(value[offset : offset + 80])
+                    await asyncio.sleep(self.chunk_seconds)
+                if submit:
+                    remote.send_key_command("ENTER")
+                await asyncio.sleep(self.flush_seconds)
+            finally:
+                remote.disconnect()
+
+
 def load_service_links(path: Path | None) -> dict[str, ServiceLink]:
     """Load private, host-specific TV links without baking addresses into the repo."""
     if path is None or not path.exists():
@@ -477,7 +523,12 @@ async def pair(remote: Any) -> None:
     await remote.async_finish_pairing(code.strip())
 
 
-async def command_worker(queue: asyncio.Queue[tuple[str, Any]], remote: Any, state: BridgeState) -> None:
+async def command_worker(
+    queue: asyncio.Queue[tuple[str, Any]],
+    remote: Any,
+    state: BridgeState,
+    text_sender: OnDemandTextSender | None = None,
+) -> None:
     while True:
         kind, value = await queue.get()
         try:
@@ -490,10 +541,16 @@ async def command_worker(queue: asyncio.Queue[tuple[str, Any]], remote: Any, sta
             elif kind == "link":
                 remote.send_launch_app_command(value)
             elif kind == "text":
-                remote.send_text(value)
+                if text_sender:
+                    await text_sender.send(value)
+                else:
+                    remote.send_text(value)
             elif kind == "text_submit":
-                remote.send_text(value)
-                remote.send_key_command("ENTER")
+                if text_sender:
+                    await text_sender.send(value, submit=True)
+                else:
+                    remote.send_text(value)
+                    remote.send_key_command("ENTER")
             state.update(last_error="")
         except Exception as exc:  # keep the bridge alive and avoid leaking network details to the phone
             state.update(last_error=f"{kind} command failed: {type(exc).__name__}")
@@ -531,7 +588,9 @@ async def run(args: argparse.Namespace) -> None:
         str(data_dir / "client-cert.pem"),
         str(data_dir / "client-key.pem"),
         args.tv,
-        enable_ime=True,
+        # A persistent IME connection suppresses the TV's on-screen keyboard on some TCL firmware.
+        # Keep normal control key-only and open a short-lived IME connection only for explicit text sends.
+        enable_ime=False,
         enable_voice=False,
     )
     generated = await remote.async_generate_cert_if_missing()
@@ -572,6 +631,12 @@ async def run(args: argparse.Namespace) -> None:
         raise SystemExit("--public-base-url must start with http:// or https://")
     remote_url = public_base + f"/r/{token}/"
     assets["onboarding.svg"] = ("image/svg+xml; charset=utf-8", onboarding_svg(remote_url))
+    text_sender = OnDemandTextSender(
+        AndroidTVRemote,
+        args.tv,
+        str(data_dir / "client-cert.pem"),
+        str(data_dir / "client-key.pem"),
+    )
     server = RemoteServer(
         (args.bind, args.port), page, token, state, CommandSink(loop, queue), assets, links, transcriber
     )
@@ -579,7 +644,7 @@ async def run(args: argparse.Namespace) -> None:
     thread.start()
     print(f"Phone remote: {remote_url}")
     print("Private LAN only. Press Ctrl-C to stop; the browser server then closes immediately.")
-    worker = asyncio.create_task(command_worker(queue, remote, state))
+    worker = asyncio.create_task(command_worker(queue, remote, state, text_sender))
     try:
         await asyncio.Event().wait()
     finally:

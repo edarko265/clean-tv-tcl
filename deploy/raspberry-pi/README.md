@@ -64,3 +64,25 @@ authorize another device.
 
 Prefer Quick Connect or the existing password-protected user over a passwordless living-room account. Media remains
 on the Pi under the server's configured read-only movie and show mounts; the TV is only a playback client.
+
+## Copy owned media from a Mac
+
+Paths such as `/path/to/Show Name` in documentation are placeholders, not folders that exist on a Mac. Locate the
+real show or movie folder in Finder first. In Terminal, type `scp -r ` with a trailing space, drag the real folder
+from Finder into Terminal so macOS inserts its exact path, and then append one of these destinations:
+
+```text
+admin@<pi-ip>:/mnt/storage/media/shows/
+admin@<pi-ip>:/mnt/storage/media/movies/
+```
+
+Replace `<pi-ip>` with the Pi's address; do not type the angle brackets. A full command must contain a local path
+that `ls` can see, for example:
+
+```bash
+ls "/Users/your-name/Movies/A Real Show Folder"
+scp -r "/Users/your-name/Movies/A Real Show Folder" admin@192.168.1.15:/mnt/storage/media/shows/
+```
+
+Use the `shows` destination for series and `movies` for films. Jellyfin's library scan sees the files after the
+copy; Sonarr and Radarr are optional organizers and do not provide media themselves.

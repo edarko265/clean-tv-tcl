@@ -178,6 +178,42 @@ class PhoneRemoteTest(unittest.TestCase):
 
 
 class CommandWorkerTest(unittest.IsolatedAsyncioTestCase):
+    async def test_text_sender_enables_ime_only_during_a_send_and_chunks_long_text(self):
+        instances = []
+
+        class Remote:
+            def __init__(self, *args, **kwargs):
+                self.args = args
+                self.kwargs = kwargs
+                self.calls = []
+                instances.append(self)
+
+            async def async_connect(self):
+                self.calls.append(("connect",))
+
+            def send_text(self, value):
+                self.calls.append(("text", value))
+
+            def send_key_command(self, value):
+                self.calls.append(("key", value))
+
+            def disconnect(self):
+                self.calls.append(("disconnect",))
+
+        sender = PHONE_REMOTE.OnDemandTextSender(
+            Remote, "tv.test", "client-cert.pem", "client-key.pem",
+            settle_seconds=0, chunk_seconds=0, flush_seconds=0,
+        )
+        value = "a" * 80 + "b"
+        await sender.send(value, submit=True)
+        self.assertEqual(1, len(instances))
+        self.assertTrue(instances[0].kwargs["enable_ime"])
+        self.assertFalse(instances[0].kwargs["enable_voice"])
+        self.assertEqual(
+            [("connect",), ("text", "a" * 80), ("text", "b"), ("key", "ENTER"), ("disconnect",)],
+            instances[0].calls,
+        )
+
     async def test_text_submit_sends_text_then_enter_and_repeated_keys(self):
         class Remote:
             def __init__(self):
