@@ -2,5 +2,5 @@
 # Pillow for the three scripts that draw the README card (tools/readme_stats.py, readme_featured.py,
 # readme_card.py; see docs/workflows/press.md). Not needed to clean a TV.
 # tools/venv/bin/pip install -r tools/requirements-perf.txt   See tools/trace.md.
-perfetto==0.58.2
+perfetto==0.59.1
 pillow==11.3.0
